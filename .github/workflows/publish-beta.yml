@@ -1,0 +1,32 @@
+name: publish-beta
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+        - 'NewLife.EasyIO/**'
+  workflow_dispatch:
+
+jobs:
+  build-publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore
+      run: |
+        dotnet restore NewLife.EasyIO/NewLife.EasyIO.csproj
+        dotnet restore NewLife.EasyIOWeb/NewLife.EasyIOWeb.csproj
+    - name: Build
+      run: |
+        dotnet pack --no-restore --version-suffix $(date "+%Y.%m%d-beta%H%M") -c Release -o out NewLife.EasyIO/NewLife.EasyIO.csproj
+        dotnet pack --no-restore --version-suffix $(date "+%Y.%m%d-beta%H%M") -c Release -o out NewLife.EasyIOWeb/NewLife.EasyIOWeb.csproj
+    - name: Publish
+      run: |
+        dotnet nuget push ./out/*.nupkg --skip-duplicate --source https://nuget.pkg.github.com/NewLifeX/index.json --api-key ${{ github.token }}
+        dotnet nuget push ./out/*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.nugetKey }}
