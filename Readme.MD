@@ -12,7 +12,7 @@
 EasyIO简单文件存储，支持分布式系统中文件集中存储。只有三个webapi接口：put(id, data) / get(id) / geturl(id)。sdk只有一个 EasyClient，对接上述三个接口。   
 使用方式，可以引用sdk，也可以直接把 EasyClient 类抠出来使用。  
 
-源码： https://github.com/NewLifeX/NewLife.EasyIO  
+源码： https://github.com/NewLifeX/EasyIO  
 Nuget：NewLife.EasyIO  / NewLife.EasyWeb
 
 
