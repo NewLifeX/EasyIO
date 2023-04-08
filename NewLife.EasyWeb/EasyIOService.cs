@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using NewLife.EasyIO.Options;
 using NewLife.Log;
 
 namespace NewLife.EasyWeb;
@@ -15,6 +16,8 @@ public static class EasyIOService
 
         XTrace.WriteLine("{0} Start 配置EasyIO {0}", new String('=', 32));
         Assembly.GetExecutingAssembly().WriteVersion();
+
+        services.AddSingleton(new FileStorageOptions { Path = "../files" });
 
         XTrace.WriteLine("{0} End   配置EasyIO {0}", new String('=', 32));
 

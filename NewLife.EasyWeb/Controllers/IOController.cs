@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using NewLife;
 using NewLife.EasyIO.Options;
 using NewLife.Log;
 
-namespace EasyIO.Controllers;
+namespace NewLife.EasyWeb.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class IOController : ControllerBase
+public class IOController : ApiControllerBase
 {
     private readonly FileStorageOptions _storageOptions;
     private readonly ITracer _tracer;
@@ -29,38 +30,27 @@ public class IOController : ControllerBase
         return fileName;
     }
 
-    [HttpGet]
-    public async Task<String> Put(String id)
+    [HttpPut]
+    public async Task<Object> Put(String id)
     {
         if (id.IsNullOrEmpty()) throw new ArgumentNullException(nameof(id));
 
         var fileName = GetFile(id);
 
-        using var span = _tracer?.NewSpan("UploadFile", fileName);
-        XTrace.WriteLine("上传：{0}", fileName);
-
         // 保存文件
-        try
-        {
-            fileName.EnsureDirectory(true);
+        fileName.EnsureDirectory(true);
 
-            var ms = Request.Body;
-            using var fs = new FileStream(fileName, FileMode.OpenOrCreate);
-            await ms.CopyToAsync(fs);
-            fs.SetLength(fs.Length);
+        var ms = Request.Body;
+        using var fs = new FileStream(fileName, FileMode.OpenOrCreate);
+        await ms.CopyToAsync(fs);
+        fs.SetLength(fs.Length);
 
-            return id;
-        }
-        catch (Exception ex)
-        {
-            span?.SetError(ex, null);
-            XTrace.WriteException(ex);
-            throw;
-        }
+        var fi = fileName.AsFile();
+        return new { name = id, length = fi.Length, time = fi.LastWriteTime, IsDirectory = false };
     }
 
     [HttpGet]
-    public Byte[] Get(String id)
+    public IActionResult Get(String id)
     {
         if (id.IsNullOrEmpty()) throw new Exception("找不到记录！id=" + id);
 
@@ -68,7 +58,7 @@ public class IOController : ControllerBase
         var fi = fileName.AsFile();
         if (!fi.Exists) throw new Exception("文件不存在");
 
-        return fi.ReadBytes();
+        return File(fi.ReadBytes(), "application/octet-stream");
     }
 
     [HttpGet]
@@ -82,5 +72,39 @@ public class IOController : ControllerBase
 
         //todo 实现计算Url
         throw new NotImplementedException();
+    }
+
+    /// <summary>搜索文件</summary>
+    /// <param name="pattern">匹配模式。如/202304/*.jpg</param>
+    /// <param name="start">开始序号。0开始</param>
+    /// <param name="count">最大个数</param>
+    /// <returns></returns>
+    [HttpGet]
+    public virtual IList<Object> Search(String pattern, Int32 start, Int32 count)
+    {
+        //if (searchPattern.IsNullOrEmpty()) throw new ArgumentNullException(nameof(searchPattern));
+
+        var dir = "";
+        var pt = "";
+        if (!pattern.IsNullOrEmpty())
+        {
+            var p = pattern.LastIndexOfAny(new[] { '/', '\\' });
+            if (p >= 0 && pattern.Substring(p + 1).Contains("*"))
+            {
+                dir = pattern.Substring(0, p);
+                pt = pattern.Substring(p + 1);
+            }
+            else
+            {
+                dir = pattern;
+            }
+        }
+
+        var di = _storageOptions.Path.CombinePath(dir).AsDirectory();
+        if (!di.Exists) return null;
+
+        var fis = di.GetFiles(pt).Skip(start).Take(count).ToArray();
+
+        return fis.Select(e => new { name = e.Name, time = e.LastWriteTime }).Cast<Object>().ToList();
     }
 }

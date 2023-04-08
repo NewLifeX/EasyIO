@@ -1,10 +1,10 @@
 ﻿{
   "profiles": {
-    "YqWeb": {
+    "EasyWeb": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5300",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
