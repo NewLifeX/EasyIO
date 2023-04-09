@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NewLife;
 using NewLife.EasyIO.Options;
 using NewLife.Log;
@@ -19,15 +18,14 @@ public class IOController : ApiControllerBase
         _tracer = tracer;
     }
 
-    private String GetFile(String id)
+    private String GetPath(String id)
     {
         if (id.IsNullOrEmpty()) throw new ArgumentNullException(nameof(id));
 
         var set = _storageOptions;
         if (set.Path.IsNullOrEmpty()) throw new Exception("未配置存储信息");
 
-        var fileName = set.Path.CombinePath(id).GetFullPath();
-        return fileName;
+        return set.Path.CombinePath(id).GetFullPath();
     }
 
     [HttpPut]
@@ -35,7 +33,7 @@ public class IOController : ApiControllerBase
     {
         if (id.IsNullOrEmpty()) throw new ArgumentNullException(nameof(id));
 
-        var fileName = GetFile(id);
+        var fileName = GetPath(id);
 
         // 保存文件
         fileName.EnsureDirectory(true);
@@ -54,7 +52,7 @@ public class IOController : ApiControllerBase
     {
         if (id.IsNullOrEmpty()) throw new Exception("找不到记录！id=" + id);
 
-        var fileName = GetFile(id);
+        var fileName = GetPath(id);
         var fi = fileName.AsFile();
         if (!fi.Exists) throw new Exception("文件不存在");
 
@@ -66,12 +64,38 @@ public class IOController : ApiControllerBase
     {
         if (id.IsNullOrEmpty()) throw new Exception("找不到记录！id=" + id);
 
-        var fileName = GetFile(id);
+        var fileName = GetPath(id);
         var fi = fileName.AsFile();
         if (!fi.Exists) throw new Exception("文件不存在");
 
         //todo 实现计算Url
         throw new NotImplementedException();
+    }
+
+    [HttpDelete]
+    public Int32 Delete(String id)
+    {
+        if (id.IsNullOrEmpty()) throw new Exception("找不到记录！id=" + id);
+
+        var path = GetPath(id);
+        if (path.EndsWith('/') || path.EndsWith('\\'))
+        {
+            var di = path.AsDirectory();
+            if (!di.Exists) return 0;
+
+            di.Delete();
+
+            return 1;
+        }
+        else
+        {
+            var fi = path.AsFile();
+            if (!fi.Exists) return 0;
+
+            fi.Delete();
+
+            return 1;
+        }
     }
 
     /// <summary>搜索文件</summary>
@@ -83,16 +107,19 @@ public class IOController : ApiControllerBase
     public virtual IList<Object> Search(String pattern, Int32 start, Int32 count)
     {
         //if (searchPattern.IsNullOrEmpty()) throw new ArgumentNullException(nameof(searchPattern));
+        // 强制count默认值为100
+        if (count <= 0) count = 100;
+        if (start <= 0) start = 0;
 
         var dir = "";
-        var pt = "";
+        var pt = "*";
         if (!pattern.IsNullOrEmpty())
         {
             var p = pattern.LastIndexOfAny(new[] { '/', '\\' });
-            if (p >= 0 && pattern.Substring(p + 1).Contains("*"))
+            if (p >= 0 && pattern[(p + 1)..].Contains('*'))
             {
-                dir = pattern.Substring(0, p);
-                pt = pattern.Substring(p + 1);
+                dir = pattern[..p];
+                pt = pattern[(p + 1)..];
             }
             else
             {
@@ -103,8 +130,40 @@ public class IOController : ApiControllerBase
         var di = _storageOptions.Path.CombinePath(dir).AsDirectory();
         if (!di.Exists) return null;
 
-        var fis = di.GetFiles(pt).Skip(start).Take(count).ToArray();
+        var root = _storageOptions.Path.EnsureEnd("/").GetFullPath();
+        var rs = new List<Object>();
 
-        return fis.Select(e => new { name = e.Name, time = e.LastWriteTime }).Cast<Object>().ToList();
+        // 子目录列表
+        var dis = di.GetDirectories(pt);
+        if (dis.Length > 0)
+        {
+            foreach (var item in dis.Skip(start).Take(count))
+            {
+                rs.Add(new
+                {
+                    name = item.FullName.TrimStart(root).Replace('\\', '/'),
+                    time = item.LastWriteTime
+                });
+            }
+            start += dis.Length;
+            count -= rs.Count;
+        }
+        if (count == 0) return rs;
+
+        // 文件列表
+        var fis = di.GetFiles(pt);
+        if (fis.Length > 0)
+        {
+            foreach (var item in fis.Skip(start).Take(count))
+            {
+                rs.Add(new
+                {
+                    name = item.FullName.TrimStart(root).Replace('\\', '/'),
+                    time = item.LastWriteTime
+                });
+            }
+        }
+
+        return rs;
     }
 }
