@@ -1,17 +1,18 @@
-﻿using NewLife;
-using NewLife.Configuration;
+﻿using NewLife.Configuration;
 using NewLife.Log;
-using NewLife.Model;
 
 namespace NewLife.EasyIO.Options;
 
 /// <summary>文件存储选型</summary>
 public class FileStorageOptions : IConfigMapping
 {
+    /// <summary>路径</summary>
     public String Path { get; set; }
 
+    /// <summary>实例化</summary>
     public FileStorageOptions() { }
 
+    /// <summary>实例化</summary>
     public FileStorageOptions(IServiceProvider serviceProvider)
     {
         var config = serviceProvider.GetService<IConfigProvider>();

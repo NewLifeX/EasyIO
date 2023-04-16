@@ -1,6 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
-    <TargetFrameworks>net45;net461;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <AssemblyTitle>EasyIO简易文件存储</AssemblyTitle>
     <Description>EasyIO简单文件存储，支持分布式系统中文件集中存储</Description>
     <Company>新生命开发团队</Company>
@@ -37,8 +39,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Thing\EventPropertyMethod.cs" />
-    <Compile Remove="Thing\ServicePropertyMethod.cs" />
+    <Compile Remove="EasyClient.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,15 +50,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NewLife.Core" Version="10.2.2023.401" />
+    <PackageReference Include="NewLife.Core" Version="10.2.2023.416-beta1212" />
+    <PackageReference Include="NewLife.Stardust.Extensions" Version="2.8.2023.416-beta1214" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\Doc\leaf.png" Link="leaf.png" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

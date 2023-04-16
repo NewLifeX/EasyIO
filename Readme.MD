@@ -5,14 +5,11 @@
 ![Nuget Downloads](https://img.shields.io/nuget/dt/newlife.EasyIO?logo=nuget)
 ![Nuget](https://img.shields.io/nuget/v/newlife.EasyIO?logo=nuget)
 ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/newlife.EasyIO?label=dev%20nuget&logo=nuget)
-![Nuget Downloads](https://img.shields.io/nuget/dt/newlife.EasyWeb?logo=nuget)
-![Nuget](https://img.shields.io/nuget/v/newlife.EasyWeb?logo=nuget)
-![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/newlife.EasyWeb?label=dev%20nuget&logo=nuget)
 
 EasyIO简单文件存储，在分布式系统架构中支持集中存储文件。只有几个webapi接口：put/get/geturl/delete/search。sdk只有一个 EasyClient。  
 
 源码： https://github.com/NewLifeX/EasyIO  
-Nuget：NewLife.EasyIO  / NewLife.EasyWeb
+Nuget：NewLife.EasyIO  
 
 
 ## 新生命项目矩阵
@@ -54,7 +51,7 @@ Nuget：NewLife.EasyIO  / NewLife.EasyWeb
 ![XCode](https://newlifex.com/logo.png)  
 
 新生命团队（NewLife）成立于2002年，是新时代物联网行业解决方案提供者，致力于提供软硬件应用方案咨询、系统架构规划与开发服务。  
-团队主导的开源NewLife系列组件已被广泛应用于各行业，Nuget累计下载量高达60余万次。  
+团队主导的开源NewLife系列组件已被广泛应用于各行业，Nuget累计下载量高达140余万次。  
 团队开发的大数据核心组件NewLife.XCode、蚂蚁调度计算平台AntJob、星尘分布式平台Stardust、缓存队列组件NewLife.Redis以及物联网平台NewLife.IoT，均成功应用于电力、高校、互联网、电信、交通、物流、工控、医疗、文博等行业，为客户提供了大量先进、可靠、安全、高质量、易扩展的产品和系统集成服务。  
 
 我们将不断通过服务的持续改进，成为客户长期信赖的合作伙伴，通过不断的创新和发展，成为国内优秀的IT服务供应商。  
