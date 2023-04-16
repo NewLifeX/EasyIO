@@ -1,8 +1,5 @@
-﻿using System.Reflection;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using NewLife.Log;
 using NewLife.Remoting;

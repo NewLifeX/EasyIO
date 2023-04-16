@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewLife;
 using NewLife.EasyIO.Options;
-using NewLife.Log;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -10,13 +9,8 @@ namespace NewLife.EasyWeb.Controllers;
 public class IOController : ApiControllerBase
 {
     private readonly FileStorageOptions _storageOptions;
-    private readonly ITracer _tracer;
 
-    public IOController(FileStorageOptions storageOptions, ITracer tracer)
-    {
-        _storageOptions = storageOptions;
-        _tracer = tracer;
-    }
+    public IOController(FileStorageOptions storageOptions) => _storageOptions = storageOptions;
 
     private String GetPath(String id)
     {
