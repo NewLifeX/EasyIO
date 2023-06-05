@@ -1,7 +1,7 @@
 ﻿# EasyIO - 轻量级文件存储
 
-![GitHub top language](https://img.shields.io/github/languages/top/newlifex/newlife.EasyIO?logo=github)
-![GitHub License](https://img.shields.io/github/license/newlifex/newlife.EasyIO?logo=github)
+![GitHub top language](https://img.shields.io/github/languages/top/newlifex/EasyIO?logo=github)
+![GitHub License](https://img.shields.io/github/license/newlifex/EasyIO?logo=github)
 ![Nuget Downloads](https://img.shields.io/nuget/dt/newlife.EasyIO?logo=nuget)
 ![Nuget](https://img.shields.io/nuget/v/newlife.EasyIO?logo=nuget)
 ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/newlife.EasyIO?label=dev%20nuget&logo=nuget)
