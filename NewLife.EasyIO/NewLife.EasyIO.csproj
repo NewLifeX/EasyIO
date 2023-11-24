@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <AssemblyTitle>EasyIO简易文件存储</AssemblyTitle>
     <Description>EasyIO简单文件存储，支持分布式系统中文件集中存储</Description>
     <Company>新生命开发团队</Company>
