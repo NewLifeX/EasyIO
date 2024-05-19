@@ -3,8 +3,8 @@
     "EasyWeb": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5300",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:6000/admin",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

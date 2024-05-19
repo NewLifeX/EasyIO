@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityModel xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="https://newlifex.com https://newlifex.com/Model202309.xsd" Document="https://newlifex.com/xcode/model" xmlns="https://newlifex.com/Model202309.xsd">
+  <Option>
+    <!--类名模板。其中{name}替换为Table.Name，如{name}Model/I{name}Dto等-->
+    <ClassNameTemplate />
+    <!--显示名模板。其中{displayName}替换为Table.DisplayName-->
+    <DisplayNameTemplate />
+    <!--基类。可能包含基类和接口，其中{name}替换为Table.Name-->
+    <BaseClass>Entity</BaseClass>
+    <!--命名空间-->
+    <Namespace>EasyWeb.Data</Namespace>
+    <!--输出目录-->
+    <Output>.\</Output>
+    <!--是否使用中文文件名。默认false-->
+    <ChineseFileName>False</ChineseFileName>
+    <!--用于生成Copy函数的参数类型。例如{name}或I{name}-->
+    <ModelNameForCopy />
+    <!--带有索引器。实现IModel接口-->
+    <HasIModel>False</HasIModel>
+    <!--可为null上下文。生成String?等-->
+    <Nullable>False</Nullable>
+    <!--数据库连接名-->
+    <ConnName>EasyFile</ConnName>
+    <!--模型类模版。设置后生成模型类，用于接口数据传输，例如{name}Model-->
+    <ModelClass />
+    <!--模型类输出目录。默认当前目录的Models子目录-->
+    <ModelsOutput>.\Models\</ModelsOutput>
+    <!--模型接口模版。设置后生成模型接口，用于约束模型类和实体类，例如I{name}-->
+    <ModelInterface />
+    <!--模型接口输出目录。默认当前目录的Interfaces子目录-->
+    <InterfacesOutput>.\Interfaces\</InterfacesOutput>
+    <!--用户实体转为模型类的模型类。例如{name}或{name}DTO-->
+    <ModelNameForToModel />
+    <!--命名格式。Default/Upper/Lower/Underline-->
+    <NameFormat>Default</NameFormat>
+    <!--魔方区域显示名-->
+    <DisplayName>文件管理</DisplayName>
+    <!--魔方控制器输出目录-->
+    <CubeOutput>../Areas/Files</CubeOutput>
+  </Option>
+  <Tables>
+    <Table Name="FileStorage" Description="文件仓库。文件存储的根目录">
+      <Columns>
+        <Column Name="Id" DataType="Int32" Identity="True" PrimaryKey="True" Description="编号" />
+        <Column Name="Name" DataType="String" Master="True" Description="名称" />
+        <Column Name="Enable" DataType="Boolean" Description="启用" />
+        <Column Name="HomeDirectory" DataType="String" Description="主目录" />
+        <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
+        <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
+        <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />
+        <Column Name="UpdateUserId" DataType="Int32" Description="更新者" Category="扩展" />
+        <Column Name="UpdateTime" DataType="DateTime" Description="更新时间" Category="扩展" />
+        <Column Name="UpdateIP" DataType="String" Description="更新地址" Category="扩展" />
+        <Column Name="Remark" DataType="String" Length="500" Description="备注" Category="扩展" />
+      </Columns>
+      <Indexes>
+        <Index Columns="Name" Unique="True" />
+      </Indexes>
+    </Table>
+    <Table Name="FileEntry" Description="文件清单。详细记录每个文件源内的文件与目录信息">
+      <Columns>
+        <Column Name="Id" DataType="Int32" Identity="True" PrimaryKey="True" Description="编号" />
+        <Column Name="StorageId" DataType="Int32" Map="FileStorage@Id" Description="仓库" />
+        <Column Name="SourceId" DataType="Int32" Map="FileSource@Id" Description="来源" />
+        <Column Name="Name" DataType="String" Master="True" Length="250" Description="名称" />
+        <Column Name="Title" DataType="String" Description="标题" />
+        <Column Name="FullName" DataType="String" Length="250" Description="全路径" />
+        <Column Name="ParentId" DataType="Int32" Description="上级目录。0表示顶级" />
+        <Column Name="IsDirectory" DataType="Boolean" Description="目录。当前清单是目录而不是文件" />
+        <Column Name="Size" DataType="Int64" ItemType="GMK" Description="大小。文件大小" />
+        <Column Name="LastWrite" DataType="DateTime" Description="最后修改" />
+        <Column Name="LastAccess" DataType="DateTime" Description="最后访问" />
+        <Column Name="LastScan" DataType="DateTime" Description="最后扫描。最后一次扫描访问的时间" />
+        <Column Name="Hash" DataType="String" Description="哈希。MD5哈希" />
+        <Column Name="TraceId" DataType="String" Length="200" Description="链路标识。链路追踪" />
+        <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
+        <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
+        <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />
+        <Column Name="UpdateUserId" DataType="Int32" Description="更新者" Category="扩展" />
+        <Column Name="UpdateTime" DataType="DateTime" Description="更新时间" Category="扩展" />
+        <Column Name="UpdateIP" DataType="String" Description="更新地址" Category="扩展" />
+        <Column Name="Remark" DataType="String" Length="500" Description="备注" Category="扩展" />
+      </Columns>
+      <Indexes>
+        <Index Columns="StorageId,ParentId,Name" Unique="True" />
+        <Index Columns="ParentId" />
+        <Index Columns="SourceId,ParentId" />
+      </Indexes>
+    </Table>
+    <Table Name="FileSource" Description="文件源。文件来源，定时从文件源抓取文件回到本地缓存目录，例如get.dot.net">
+      <Columns>
+        <Column Name="Id" DataType="Int32" Identity="True" PrimaryKey="True" Description="编号" />
+        <Column Name="Name" DataType="String" Master="True" Description="名称" />
+        <Column Name="Kind" DataType="String" Description="种类。如dotnet" />
+        <Column Name="Url" DataType="String" Length="200" Description="地址" />
+        <Column Name="Enable" DataType="Boolean" Description="启用" />
+        <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
+        <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
+        <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
+        <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
+        <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />
+        <Column Name="UpdateUserId" DataType="Int32" Description="更新者" Category="扩展" />
+        <Column Name="UpdateTime" DataType="DateTime" Description="更新时间" Category="扩展" />
+        <Column Name="UpdateIP" DataType="String" Description="更新地址" Category="扩展" />
+        <Column Name="Remark" DataType="String" Length="500" Description="备注" Category="扩展" />
+      </Columns>
+      <Indexes>
+        <Index Columns="Name" Unique="True" />
+      </Indexes>
+    </Table>
+  </Tables>
+</EntityModel>
