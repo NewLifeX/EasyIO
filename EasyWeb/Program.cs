@@ -27,7 +27,7 @@ app.UseStaticFiles();
 app.UseCube(app.Environment);
 app.UseEasyIO(true);
 app.UseAuthorization();
-app.MapControllerRoute(name: "default", pattern: "{controller=Index}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // 注册退出事件
 if (app is IHost host)

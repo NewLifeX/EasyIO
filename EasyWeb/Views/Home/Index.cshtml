@@ -1,0 +1,18 @@
+﻿@model IList<FileEntry>
+@{
+}
+<table class="table table-bordered table-hover table-striped table-condensed">
+    <tr>
+        <th>名称</th>
+        <th>大小</th>
+        <th>时间</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Size.ToGMK()</td>
+            <td>@item.LastWrite.ToFullString("")</td>
+        </tr>
+    }
+</table>
