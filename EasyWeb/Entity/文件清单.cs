@@ -72,6 +72,14 @@ public partial class FileEntry
     [BindColumn("FullName", "全路径", "")]
     public String FullName { get => _FullName; set { if (OnPropertyChanging("FullName", value)) { _FullName = value; OnPropertyChanged("FullName"); } } }
 
+    private Boolean _Enable;
+    /// <summary>启用</summary>
+    [DisplayName("启用")]
+    [Description("启用")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Enable", "启用", "")]
+    public Boolean Enable { get => _Enable; set { if (OnPropertyChanging("Enable", value)) { _Enable = value; OnPropertyChanged("Enable"); } } }
+
     private Int32 _ParentId;
     /// <summary>上级目录。0表示顶级</summary>
     [DisplayName("上级目录")]
@@ -214,6 +222,7 @@ public partial class FileEntry
             "Name" => _Name,
             "Title" => _Title,
             "FullName" => _FullName,
+            "Enable" => _Enable,
             "ParentId" => _ParentId,
             "IsDirectory" => _IsDirectory,
             "Size" => _Size,
@@ -241,6 +250,7 @@ public partial class FileEntry
                 case "Name": _Name = Convert.ToString(value); break;
                 case "Title": _Title = Convert.ToString(value); break;
                 case "FullName": _FullName = Convert.ToString(value); break;
+                case "Enable": _Enable = value.ToBoolean(); break;
                 case "ParentId": _ParentId = value.ToInt(); break;
                 case "IsDirectory": _IsDirectory = value.ToBoolean(); break;
                 case "Size": _Size = value.ToLong(); break;
@@ -302,6 +312,9 @@ public partial class FileEntry
 
         /// <summary>全路径</summary>
         public static readonly Field FullName = FindByName("FullName");
+
+        /// <summary>启用</summary>
+        public static readonly Field Enable = FindByName("Enable");
 
         /// <summary>上级目录。0表示顶级</summary>
         public static readonly Field ParentId = FindByName("ParentId");
@@ -371,6 +384,9 @@ public partial class FileEntry
 
         /// <summary>全路径</summary>
         public const String FullName = "FullName";
+
+        /// <summary>启用</summary>
+        public const String Enable = "Enable";
 
         /// <summary>上级目录。0表示顶级</summary>
         public const String ParentId = "ParentId";

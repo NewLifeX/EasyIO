@@ -1,4 +1,5 @@
 ﻿using EasyWeb;
+using EasyWeb.Services;
 using NewLife.Cube;
 using NewLife.EasyWeb;
 using NewLife.Log;
@@ -12,6 +13,9 @@ var star = services.AddStardust(null);
 
 var set = EasyFileSetting.Current;
 services.AddSingleton(set);
+
+services.AddHostedService<ScanStorageService>();
+services.AddHostedService<ScanSourceService>();
 
 services.AddControllersWithViews();
 services.AddEasyIO();

@@ -78,6 +78,14 @@ public partial class FileSource
     [BindColumn("Pattern", "匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开", "")]
     public String Pattern { get => _Pattern; set { if (OnPropertyChanging("Pattern", value)) { _Pattern = value; OnPropertyChanged("Pattern"); } } }
 
+    private DateTime _LastScan;
+    /// <summary>最后扫描。记录最后一次扫描时间</summary>
+    [DisplayName("最后扫描")]
+    [Description("最后扫描。记录最后一次扫描时间")]
+    [DataObjectField(false, false, true, 0)]
+    [BindColumn("LastScan", "最后扫描。记录最后一次扫描时间", "")]
+    public DateTime LastScan { get => _LastScan; set { if (OnPropertyChanging("LastScan", value)) { _LastScan = value; OnPropertyChanged("LastScan"); } } }
+
     private Int32 _CreateUserId;
     /// <summary>创建者</summary>
     [Category("扩展")]
@@ -157,6 +165,7 @@ public partial class FileSource
             "Enable" => _Enable,
             "Period" => _Period,
             "Pattern" => _Pattern,
+            "LastScan" => _LastScan,
             "CreateUserId" => _CreateUserId,
             "CreateTime" => _CreateTime,
             "CreateIP" => _CreateIP,
@@ -177,6 +186,7 @@ public partial class FileSource
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
+                case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
                 case "CreateIP": _CreateIP = Convert.ToString(value); break;
@@ -217,6 +227,9 @@ public partial class FileSource
 
         /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
         public static readonly Field Pattern = FindByName("Pattern");
+
+        /// <summary>最后扫描。记录最后一次扫描时间</summary>
+        public static readonly Field LastScan = FindByName("LastScan");
 
         /// <summary>创建者</summary>
         public static readonly Field CreateUserId = FindByName("CreateUserId");
@@ -265,6 +278,9 @@ public partial class FileSource
 
         /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
         public const String Pattern = "Pattern";
+
+        /// <summary>最后扫描。记录最后一次扫描时间</summary>
+        public const String LastScan = "LastScan";
 
         /// <summary>创建者</summary>
         public const String CreateUserId = "CreateUserId";

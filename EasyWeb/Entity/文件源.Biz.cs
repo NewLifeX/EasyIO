@@ -82,33 +82,57 @@ public partial class FileSource : Entity<FileSource>
         return true;
     }
 
-    ///// <summary>首次连接数据库时初始化数据，仅用于实体类重载，用户不应该调用该方法</summary>
-    //[EditorBrowsable(EditorBrowsableState.Never)]
-    //protected override void InitData()
-    //{
-    //    // InitData一般用于当数据表没有数据时添加一些默认数据，该实体类的任何第一次数据库操作都会触发该方法，默认异步调用
-    //    if (Meta.Session.Count > 0) return;
+    /// <summary>首次连接数据库时初始化数据，仅用于实体类重载，用户不应该调用该方法</summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    protected override void InitData()
+    {
+        // InitData一般用于当数据表没有数据时添加一些默认数据，该实体类的任何第一次数据库操作都会触发该方法，默认异步调用
+        if (Meta.Session.Count > 0) return;
 
-    //    if (XTrace.Debug) XTrace.WriteLine("开始初始化FileSource[文件源]数据……");
+        if (XTrace.Debug) XTrace.WriteLine("开始初始化FileSource[文件源]数据……");
 
-    //    var entity = new FileSource();
-    //    entity.Name = "abc";
-    //    entity.Kind = "abc";
-    //    entity.Url = "abc";
-    //    entity.Enable = true;
-    //    entity.Period = 0;
-    //    entity.Pattern = "abc";
-    //    entity.CreateUserId = 0;
-    //    entity.CreateTime = DateTime.Now;
-    //    entity.CreateIP = "abc";
-    //    entity.UpdateUserId = 0;
-    //    entity.UpdateTime = DateTime.Now;
-    //    entity.UpdateIP = "abc";
-    //    entity.Remark = "abc";
-    //    entity.Insert();
+        var entity = new FileSource
+        {
+            Name = "dotnet6",
+            Kind = "dotNet",
+            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0",
+            Enable = true,
+            Period = 3600
+        };
+        entity.Insert();
 
-    //    if (XTrace.Debug) XTrace.WriteLine("完成初始化FileSource[文件源]数据！");
-    //}
+        entity = new FileSource
+        {
+            Name = "dotnet7",
+            Kind = "dotNet",
+            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/7.0",
+            Enable = true,
+            Period = 3600
+        };
+        entity.Insert();
+
+        entity = new FileSource
+        {
+            Name = "dotnet8",
+            Kind = "dotNet",
+            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0",
+            Enable = true,
+            Period = 3600
+        };
+        entity.Insert();
+
+        entity = new FileSource
+        {
+            Name = "dotnet9",
+            Kind = "dotNet",
+            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/9.0",
+            Enable = true,
+            Period = 3600
+        };
+        entity.Insert();
+
+        if (XTrace.Debug) XTrace.WriteLine("完成初始化FileSource[文件源]数据！");
+    }
 
     ///// <summary>已重载。基类先调用Valid(true)验证数据，然后在事务保护内调用OnInsert</summary>
     ///// <returns></returns>

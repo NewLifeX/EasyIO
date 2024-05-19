@@ -170,6 +170,18 @@ public partial class FileEntry : Entity<FileEntry>
 
         return FindAll(_.SourceId == sourceId & _.ParentId == parentId);
     }
+
+    /// <summary>根据仓库、上级目录查找</summary>
+    /// <param name="storageId">仓库</param>
+    /// <param name="parentId">上级目录</param>
+    /// <returns>实体列表</returns>
+    public static IList<FileEntry> FindAllByStorageIdAndParentId(Int32 storageId, Int32 parentId)
+    {
+        // 实体缓存
+        if (Meta.Session.Count < 1000) return Meta.Cache.FindAll(e => e.StorageId == storageId && e.ParentId == parentId);
+
+        return FindAll(_.StorageId == storageId & _.ParentId == parentId);
+    }
     #endregion
 
     #region 高级查询

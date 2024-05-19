@@ -54,6 +54,30 @@ public partial class FileStorage
     [BindColumn("HomeDirectory", "主目录", "")]
     public String HomeDirectory { get => _HomeDirectory; set { if (OnPropertyChanging("HomeDirectory", value)) { _HomeDirectory = value; OnPropertyChanged("HomeDirectory"); } } }
 
+    private Int32 _Period;
+    /// <summary>同步周期。默认60秒</summary>
+    [DisplayName("同步周期")]
+    [Description("同步周期。默认60秒")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Period", "同步周期。默认60秒", "")]
+    public Int32 Period { get => _Period; set { if (OnPropertyChanging("Period", value)) { _Period = value; OnPropertyChanged("Period"); } } }
+
+    private String _Pattern;
+    /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+    [DisplayName("匹配规则")]
+    [Description("匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("Pattern", "匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开", "")]
+    public String Pattern { get => _Pattern; set { if (OnPropertyChanging("Pattern", value)) { _Pattern = value; OnPropertyChanged("Pattern"); } } }
+
+    private DateTime _LastScan;
+    /// <summary>最后扫描。记录最后一次扫描时间</summary>
+    [DisplayName("最后扫描")]
+    [Description("最后扫描。记录最后一次扫描时间")]
+    [DataObjectField(false, false, true, 0)]
+    [BindColumn("LastScan", "最后扫描。记录最后一次扫描时间", "")]
+    public DateTime LastScan { get => _LastScan; set { if (OnPropertyChanging("LastScan", value)) { _LastScan = value; OnPropertyChanged("LastScan"); } } }
+
     private Int32 _CreateUserId;
     /// <summary>创建者</summary>
     [Category("扩展")]
@@ -130,6 +154,9 @@ public partial class FileStorage
             "Name" => _Name,
             "Enable" => _Enable,
             "HomeDirectory" => _HomeDirectory,
+            "Period" => _Period,
+            "Pattern" => _Pattern,
+            "LastScan" => _LastScan,
             "CreateUserId" => _CreateUserId,
             "CreateTime" => _CreateTime,
             "CreateIP" => _CreateIP,
@@ -147,6 +174,9 @@ public partial class FileStorage
                 case "Name": _Name = Convert.ToString(value); break;
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "HomeDirectory": _HomeDirectory = Convert.ToString(value); break;
+                case "Period": _Period = value.ToInt(); break;
+                case "Pattern": _Pattern = Convert.ToString(value); break;
+                case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
                 case "CreateIP": _CreateIP = Convert.ToString(value); break;
@@ -178,6 +208,15 @@ public partial class FileStorage
 
         /// <summary>主目录</summary>
         public static readonly Field HomeDirectory = FindByName("HomeDirectory");
+
+        /// <summary>同步周期。默认60秒</summary>
+        public static readonly Field Period = FindByName("Period");
+
+        /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+        public static readonly Field Pattern = FindByName("Pattern");
+
+        /// <summary>最后扫描。记录最后一次扫描时间</summary>
+        public static readonly Field LastScan = FindByName("LastScan");
 
         /// <summary>创建者</summary>
         public static readonly Field CreateUserId = FindByName("CreateUserId");
@@ -217,6 +256,15 @@ public partial class FileStorage
 
         /// <summary>主目录</summary>
         public const String HomeDirectory = "HomeDirectory";
+
+        /// <summary>同步周期。默认60秒</summary>
+        public const String Period = "Period";
+
+        /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+        public const String Pattern = "Pattern";
+
+        /// <summary>最后扫描。记录最后一次扫描时间</summary>
+        public const String LastScan = "LastScan";
 
         /// <summary>创建者</summary>
         public const String CreateUserId = "CreateUserId";

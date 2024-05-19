@@ -45,6 +45,9 @@
         <Column Name="Name" DataType="String" Master="True" Description="名称" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="HomeDirectory" DataType="String" Description="主目录" />
+        <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
+        <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
+        <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
         <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />
@@ -65,6 +68,7 @@
         <Column Name="Name" DataType="String" Master="True" Length="250" Description="名称" />
         <Column Name="Title" DataType="String" Description="标题" />
         <Column Name="FullName" DataType="String" Length="250" Description="全路径" />
+        <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="ParentId" DataType="Int32" Description="上级目录。0表示顶级" />
         <Column Name="IsDirectory" DataType="Boolean" Description="目录。当前清单是目录而不是文件" />
         <Column Name="Size" DataType="Int64" ItemType="GMK" Description="大小。文件大小" />
@@ -96,6 +100,7 @@
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
+        <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
         <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />
