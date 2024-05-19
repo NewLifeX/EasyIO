@@ -62,6 +62,22 @@ public partial class FileSource
     [BindColumn("Enable", "启用", "")]
     public Boolean Enable { get => _Enable; set { if (OnPropertyChanging("Enable", value)) { _Enable = value; OnPropertyChanged("Enable"); } } }
 
+    private Int32 _StorageId;
+    /// <summary>仓库</summary>
+    [DisplayName("仓库")]
+    [Description("仓库")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("StorageId", "仓库", "")]
+    public Int32 StorageId { get => _StorageId; set { if (OnPropertyChanging("StorageId", value)) { _StorageId = value; OnPropertyChanged("StorageId"); } } }
+
+    private String _RootPath;
+    /// <summary>主目录。存放在目标仓库的指定路径</summary>
+    [DisplayName("主目录")]
+    [Description("主目录。存放在目标仓库的指定路径")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("RootPath", "主目录。存放在目标仓库的指定路径", "")]
+    public String RootPath { get => _RootPath; set { if (OnPropertyChanging("RootPath", value)) { _RootPath = value; OnPropertyChanged("RootPath"); } } }
+
     private Int32 _Period;
     /// <summary>同步周期。默认60秒</summary>
     [DisplayName("同步周期")]
@@ -163,6 +179,8 @@ public partial class FileSource
             "Kind" => _Kind,
             "Url" => _Url,
             "Enable" => _Enable,
+            "StorageId" => _StorageId,
+            "RootPath" => _RootPath,
             "Period" => _Period,
             "Pattern" => _Pattern,
             "LastScan" => _LastScan,
@@ -184,6 +202,8 @@ public partial class FileSource
                 case "Kind": _Kind = Convert.ToString(value); break;
                 case "Url": _Url = Convert.ToString(value); break;
                 case "Enable": _Enable = value.ToBoolean(); break;
+                case "StorageId": _StorageId = value.ToInt(); break;
+                case "RootPath": _RootPath = Convert.ToString(value); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -201,6 +221,14 @@ public partial class FileSource
     #endregion
 
     #region 关联映射
+    /// <summary>仓库</summary>
+    [XmlIgnore, IgnoreDataMember, ScriptIgnore]
+    public FileStorage Storage => Extends.Get(nameof(Storage), k => FileStorage.FindById(StorageId));
+
+    /// <summary>仓库</summary>
+    [Map(nameof(StorageId), typeof(FileStorage), "Id")]
+    public String StorageName => Storage?.Name;
+
     #endregion
 
     #region 字段名
@@ -221,6 +249,12 @@ public partial class FileSource
 
         /// <summary>启用</summary>
         public static readonly Field Enable = FindByName("Enable");
+
+        /// <summary>仓库</summary>
+        public static readonly Field StorageId = FindByName("StorageId");
+
+        /// <summary>主目录。存放在目标仓库的指定路径</summary>
+        public static readonly Field RootPath = FindByName("RootPath");
 
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
@@ -272,6 +306,12 @@ public partial class FileSource
 
         /// <summary>启用</summary>
         public const String Enable = "Enable";
+
+        /// <summary>仓库</summary>
+        public const String StorageId = "StorageId";
+
+        /// <summary>主目录。存放在目标仓库的指定路径</summary>
+        public const String RootPath = "RootPath";
 
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";

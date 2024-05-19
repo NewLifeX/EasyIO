@@ -136,6 +136,30 @@ public partial class FileEntry
     [BindColumn("Hash", "哈希。MD5哈希", "")]
     public String Hash { get => _Hash; set { if (OnPropertyChanging("Hash", value)) { _Hash = value; OnPropertyChanged("Hash"); } } }
 
+    private String _RawUrl;
+    /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
+    [DisplayName("原始地址")]
+    [Description("原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址")]
+    [DataObjectField(false, false, true, 200)]
+    [BindColumn("RawUrl", "原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址", "")]
+    public String RawUrl { get => _RawUrl; set { if (OnPropertyChanging("RawUrl", value)) { _RawUrl = value; OnPropertyChanged("RawUrl"); } } }
+
+    private Int32 _Times;
+    /// <summary>次数。下载次数</summary>
+    [DisplayName("次数")]
+    [Description("次数。下载次数")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Times", "次数。下载次数", "")]
+    public Int32 Times { get => _Times; set { if (OnPropertyChanging("Times", value)) { _Times = value; OnPropertyChanged("Times"); } } }
+
+    private DateTime _LastDownload;
+    /// <summary>最后下载</summary>
+    [DisplayName("最后下载")]
+    [Description("最后下载")]
+    [DataObjectField(false, false, true, 0)]
+    [BindColumn("LastDownload", "最后下载", "")]
+    public DateTime LastDownload { get => _LastDownload; set { if (OnPropertyChanging("LastDownload", value)) { _LastDownload = value; OnPropertyChanged("LastDownload"); } } }
+
     private String _TraceId;
     /// <summary>链路标识。链路追踪</summary>
     [DisplayName("链路标识")]
@@ -230,6 +254,9 @@ public partial class FileEntry
             "LastAccess" => _LastAccess,
             "LastScan" => _LastScan,
             "Hash" => _Hash,
+            "RawUrl" => _RawUrl,
+            "Times" => _Times,
+            "LastDownload" => _LastDownload,
             "TraceId" => _TraceId,
             "CreateUserId" => _CreateUserId,
             "CreateTime" => _CreateTime,
@@ -258,6 +285,9 @@ public partial class FileEntry
                 case "LastAccess": _LastAccess = value.ToDateTime(); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "Hash": _Hash = Convert.ToString(value); break;
+                case "RawUrl": _RawUrl = Convert.ToString(value); break;
+                case "Times": _Times = value.ToInt(); break;
+                case "LastDownload": _LastDownload = value.ToDateTime(); break;
                 case "TraceId": _TraceId = Convert.ToString(value); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
@@ -337,6 +367,15 @@ public partial class FileEntry
         /// <summary>哈希。MD5哈希</summary>
         public static readonly Field Hash = FindByName("Hash");
 
+        /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
+        public static readonly Field RawUrl = FindByName("RawUrl");
+
+        /// <summary>次数。下载次数</summary>
+        public static readonly Field Times = FindByName("Times");
+
+        /// <summary>最后下载</summary>
+        public static readonly Field LastDownload = FindByName("LastDownload");
+
         /// <summary>链路标识。链路追踪</summary>
         public static readonly Field TraceId = FindByName("TraceId");
 
@@ -408,6 +447,15 @@ public partial class FileEntry
 
         /// <summary>哈希。MD5哈希</summary>
         public const String Hash = "Hash";
+
+        /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
+        public const String RawUrl = "RawUrl";
+
+        /// <summary>次数。下载次数</summary>
+        public const String Times = "Times";
+
+        /// <summary>最后下载</summary>
+        public const String LastDownload = "LastDownload";
 
         /// <summary>链路标识。链路追踪</summary>
         public const String TraceId = "TraceId";

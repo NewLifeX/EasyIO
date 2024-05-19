@@ -76,6 +76,9 @@
         <Column Name="LastAccess" DataType="DateTime" Description="最后访问" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。最后一次扫描访问的时间" />
         <Column Name="Hash" DataType="String" Description="哈希。MD5哈希" />
+        <Column Name="RawUrl" DataType="String" Length="200" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
+        <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
+        <Column Name="LastDownload" DataType="DateTime" Description="最后下载" />
         <Column Name="TraceId" DataType="String" Length="200" Description="链路标识。链路追踪" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
@@ -98,6 +101,8 @@
         <Column Name="Kind" DataType="String" Description="种类。如dotnet" />
         <Column Name="Url" DataType="String" Length="200" Description="地址" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
+        <Column Name="StorageId" DataType="Int32" Map="FileStorage@Id" Description="仓库" />
+        <Column Name="RootPath" DataType="String" Description="主目录。存放在目标仓库的指定路径" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
