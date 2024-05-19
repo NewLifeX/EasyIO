@@ -161,11 +161,11 @@ public partial class FileEntry
     public DateTime LastDownload { get => _LastDownload; set { if (OnPropertyChanging("LastDownload", value)) { _LastDownload = value; OnPropertyChanged("LastDownload"); } } }
 
     private String _TraceId;
-    /// <summary>链路标识。链路追踪</summary>
-    [DisplayName("链路标识")]
-    [Description("链路标识。链路追踪")]
+    /// <summary>链路。链路追踪</summary>
+    [DisplayName("链路")]
+    [Description("链路。链路追踪")]
     [DataObjectField(false, false, true, 200)]
-    [BindColumn("TraceId", "链路标识。链路追踪", "")]
+    [BindColumn("TraceId", "链路。链路追踪", "")]
     public String TraceId { get => _TraceId; set { if (OnPropertyChanging("TraceId", value)) { _TraceId = value; OnPropertyChanged("TraceId"); } } }
 
     private Int32 _CreateUserId;
@@ -376,7 +376,7 @@ public partial class FileEntry
         /// <summary>最后下载</summary>
         public static readonly Field LastDownload = FindByName("LastDownload");
 
-        /// <summary>链路标识。链路追踪</summary>
+        /// <summary>链路。链路追踪</summary>
         public static readonly Field TraceId = FindByName("TraceId");
 
         /// <summary>创建者</summary>
@@ -457,7 +457,7 @@ public partial class FileEntry
         /// <summary>最后下载</summary>
         public const String LastDownload = "LastDownload";
 
-        /// <summary>链路标识。链路追踪</summary>
+        /// <summary>链路。链路追踪</summary>
         public const String TraceId = "TraceId";
 
         /// <summary>创建者</summary>

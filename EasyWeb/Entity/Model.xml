@@ -79,7 +79,7 @@
         <Column Name="RawUrl" DataType="String" Length="200" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
         <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
         <Column Name="LastDownload" DataType="DateTime" Description="最后下载" />
-        <Column Name="TraceId" DataType="String" Length="200" Description="链路标识。链路追踪" />
+        <Column Name="TraceId" DataType="String" Length="200" Description="链路。链路追踪" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
         <Column Name="CreateIP" DataType="String" Description="创建地址" Category="扩展" />

@@ -20,7 +20,7 @@ public class FileEntryController : EntityController<FileEntry>
     {
         //LogOnChange = true;
 
-        //ListFields.RemoveField("Id", "Creator");
+        ListFields.RemoveField("SourceId", "Title", "FullName", "ParentId", "Hash", "RawUrl");
         ListFields.RemoveCreateField().RemoveRemarkField();
 
         //{
@@ -28,13 +28,12 @@ public class FileEntryController : EntityController<FileEntry>
         //    df.Url = "?code={Code}";
         //    df.Target = "_blank";
         //}
-        //{
-        //    var df = ListFields.AddListField("devices", null, "Onlines");
-        //    df.DisplayName = "查看设备";
-        //    df.Url = "Device?groupId={Id}";
-        //    df.DataVisible = e => (e as FileEntry).Devices > 0;
-        //    df.Target = "_frame";
-        //}
+        {
+            var df = ListFields.AddListField("files", "Enable");
+            df.DisplayName = "查看文件";
+            df.Url = "/Files/FileEntry?parentId={Id}";
+            df.DataVisible = e => (e as FileEntry).IsDirectory;
+        }
         //{
         //    var df = ListFields.GetField("Kind") as ListField;
         //    df.GetValue = e => ((Int32)(e as FileEntry).Kind).ToString("X4");
@@ -54,12 +53,13 @@ public class FileEntryController : EntityController<FileEntry>
     /// <returns></returns>
     protected override IEnumerable<FileEntry> Search(Pager p)
     {
-        //var deviceId = p["deviceId"].ToInt(-1);
+        var storageId = p["storageId"].ToInt(-1);
+        var parentId = p["parentId"].ToInt(-1);
         //var enable = p["enable"]?.ToBoolean();
 
         var start = p["dtStart"].ToDateTime();
         var end = p["dtEnd"].ToDateTime();
 
-        return FileEntry.Search(start, end, p["Q"], p);
+        return FileEntry.Search(storageId, null, parentId, start, end, p["Q"], p);
     }
 }

@@ -28,13 +28,11 @@ public class FileStorageController : EntityController<FileStorage>
         //    df.Url = "?code={Code}";
         //    df.Target = "_blank";
         //}
-        //{
-        //    var df = ListFields.AddListField("devices", null, "Onlines");
-        //    df.DisplayName = "查看设备";
-        //    df.Url = "Device?groupId={Id}";
-        //    df.DataVisible = e => (e as FileStorage).Devices > 0;
-        //    df.Target = "_frame";
-        //}
+        {
+            var df = ListFields.AddListField("details", null, "HomeDirectory");
+            df.DisplayName = "查看文件";
+            df.Url = "/Files/FileEntry?storageId={StorageId}&parentId=0";
+        }
         //{
         //    var df = ListFields.GetField("Kind") as ListField;
         //    df.GetValue = e => ((Int32)(e as FileStorage).Kind).ToString("X4");
