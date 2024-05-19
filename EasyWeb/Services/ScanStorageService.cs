@@ -64,6 +64,8 @@ public class ScanStorageService : IHostedService
 
         var totalSize = 0L;
         var rootPath = root.FullName.EnsureEnd(Runtime.Windows ? "\\" : "/");
+
+        // 扫描文件
         foreach (var fi in parentDir.GetFiles(pattern))
         {
             var fe = childs.FirstOrDefault(e => e.Name == fi.Name);
@@ -84,9 +86,13 @@ public class ScanStorageService : IHostedService
 
             fe.Save();
 
+            // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
+            if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
+
             totalSize += fe.Size;
         }
 
+        // 扫描目录
         foreach (var di in parentDir.GetDirectories(pattern))
         {
             var fe = childs.FirstOrDefault(e => e.Name == di.Name);
@@ -105,6 +111,9 @@ public class ScanStorageService : IHostedService
             fe.Save();
 
             Process(storage, di, fe);
+
+            // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
+            if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
 
             totalSize += fe.Size;
         }
