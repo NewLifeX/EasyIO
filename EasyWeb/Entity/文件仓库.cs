@@ -54,6 +54,14 @@ public partial class FileStorage
     [BindColumn("HomeDirectory", "主目录", "")]
     public String HomeDirectory { get => _HomeDirectory; set { if (OnPropertyChanging("HomeDirectory", value)) { _HomeDirectory = value; OnPropertyChanged("HomeDirectory"); } } }
 
+    private Int64 _Size;
+    /// <summary>大小。总大小</summary>
+    [DisplayName("大小")]
+    [Description("大小。总大小")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Size", "大小。总大小", "", ItemType = "GMK")]
+    public Int64 Size { get => _Size; set { if (OnPropertyChanging("Size", value)) { _Size = value; OnPropertyChanged("Size"); } } }
+
     private Int32 _Period;
     /// <summary>同步周期。默认60秒</summary>
     [DisplayName("同步周期")]
@@ -154,6 +162,7 @@ public partial class FileStorage
             "Name" => _Name,
             "Enable" => _Enable,
             "HomeDirectory" => _HomeDirectory,
+            "Size" => _Size,
             "Period" => _Period,
             "Pattern" => _Pattern,
             "LastScan" => _LastScan,
@@ -174,6 +183,7 @@ public partial class FileStorage
                 case "Name": _Name = Convert.ToString(value); break;
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "HomeDirectory": _HomeDirectory = Convert.ToString(value); break;
+                case "Size": _Size = value.ToLong(); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -208,6 +218,9 @@ public partial class FileStorage
 
         /// <summary>主目录</summary>
         public static readonly Field HomeDirectory = FindByName("HomeDirectory");
+
+        /// <summary>大小。总大小</summary>
+        public static readonly Field Size = FindByName("Size");
 
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
@@ -256,6 +269,9 @@ public partial class FileStorage
 
         /// <summary>主目录</summary>
         public const String HomeDirectory = "HomeDirectory";
+
+        /// <summary>大小。总大小</summary>
+        public const String Size = "Size";
 
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";

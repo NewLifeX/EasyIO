@@ -62,6 +62,7 @@ public class ScanStorageService : IHostedService
 
         var childs = FileEntry.FindAllByStorageIdAndParentId(storage.Id, pid);
 
+        var totalSize = 0L;
         var rootPath = root.FullName.EnsureEnd(Runtime.Windows ? "\\" : "/");
         foreach (var fi in parentDir.GetFiles(pattern))
         {
@@ -82,6 +83,8 @@ public class ScanStorageService : IHostedService
             fe.LastScan = DateTime.Now;
 
             fe.Save();
+
+            totalSize += fe.Size;
         }
 
         foreach (var di in parentDir.GetDirectories(pattern))
@@ -102,6 +105,19 @@ public class ScanStorageService : IHostedService
             fe.Save();
 
             Process(storage, di, fe);
+
+            totalSize += fe.Size;
+        }
+
+        if (parent != null)
+        {
+            parent.Size = totalSize;
+            parent.Update();
+        }
+        else
+        {
+            storage.Size = totalSize;
+            storage.Update();
         }
 
         // childs中有而root中没有的，需要标记禁用，长时间禁用的，需要标记已删除

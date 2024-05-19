@@ -45,6 +45,7 @@
         <Column Name="Name" DataType="String" Master="True" Description="名称" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="HomeDirectory" DataType="String" Description="主目录" />
+        <Column Name="Size" DataType="Int64" ItemType="GMK" Description="大小。总大小" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
