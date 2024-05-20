@@ -7,6 +7,7 @@
         <th>时间</th>
         <th>大小</th>
         <th>名称</th>
+        <th>哈希（MD5）</th>
     </tr>
     @foreach (var item in Model)
     {
@@ -16,6 +17,7 @@
             <td>
                 <a href="@(HttpUtility.UrlEncode(item.Name))" title="@item.Title">@item.Name</a>
             </td>
+            <td>@item.Hash</td>
         </tr>
     }
 </table>

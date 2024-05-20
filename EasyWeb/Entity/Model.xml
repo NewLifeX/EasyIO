@@ -69,7 +69,7 @@
         <Column Name="SourceId" DataType="Int32" Map="FileSource@Id" Description="来源" />
         <Column Name="Name" DataType="String" Master="True" Length="250" Description="名称" />
         <Column Name="Title" DataType="String" Description="标题" />
-        <Column Name="FullName" DataType="String" Length="250" Description="全路径" />
+        <Column Name="FullName" DataType="String" Length="250" Description="全路径。文件保存在本地的相对路径" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="ParentId" DataType="Int32" Description="上级目录。0表示顶级" />
         <Column Name="IsDirectory" DataType="Boolean" Description="目录。当前清单是目录而不是文件" />

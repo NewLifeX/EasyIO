@@ -65,11 +65,11 @@ public partial class FileEntry
     public String Title { get => _Title; set { if (OnPropertyChanging("Title", value)) { _Title = value; OnPropertyChanged("Title"); } } }
 
     private String _FullName;
-    /// <summary>全路径</summary>
+    /// <summary>全路径。文件保存在本地的相对路径</summary>
     [DisplayName("全路径")]
-    [Description("全路径")]
+    [Description("全路径。文件保存在本地的相对路径")]
     [DataObjectField(false, false, true, 250)]
-    [BindColumn("FullName", "全路径", "")]
+    [BindColumn("FullName", "全路径。文件保存在本地的相对路径", "")]
     public String FullName { get => _FullName; set { if (OnPropertyChanging("FullName", value)) { _FullName = value; OnPropertyChanged("FullName"); } } }
 
     private Boolean _Enable;
@@ -340,7 +340,7 @@ public partial class FileEntry
         /// <summary>标题</summary>
         public static readonly Field Title = FindByName("Title");
 
-        /// <summary>全路径</summary>
+        /// <summary>全路径。文件保存在本地的相对路径</summary>
         public static readonly Field FullName = FindByName("FullName");
 
         /// <summary>启用</summary>
@@ -421,7 +421,7 @@ public partial class FileEntry
         /// <summary>标题</summary>
         public const String Title = "Title";
 
-        /// <summary>全路径</summary>
+        /// <summary>全路径。文件保存在本地的相对路径</summary>
         public const String FullName = "FullName";
 
         /// <summary>启用</summary>
