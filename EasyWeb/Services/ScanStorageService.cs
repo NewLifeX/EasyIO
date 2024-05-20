@@ -2,6 +2,7 @@
 using EasyWeb.Data;
 using NewLife;
 using NewLife.Log;
+using NewLife.Remoting.Models;
 using NewLife.Threading;
 using XCode;
 
@@ -55,6 +56,13 @@ public class ScanStorageService : IHostedService
             parentDir = root;
         }
         if (!parentDir.Exists) return;
+
+        // 设置状态为处理中
+        if (parent == null)
+        {
+            storage.Status = CommandStatus.处理中;
+            storage.Update();
+        }
 
         var pattern = storage.Pattern;
         if (pattern.IsNullOrEmpty()) pattern = "*";
@@ -159,6 +167,13 @@ public class ScanStorageService : IHostedService
             {
                 fe.Delete();
             }
+        }
+
+        // 设置状态为已完成
+        if (parent == null)
+        {
+            storage.Status = CommandStatus.已完成;
+            storage.Update();
         }
     }
 }

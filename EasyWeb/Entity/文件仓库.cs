@@ -62,6 +62,14 @@ public partial class FileStorage
     [BindColumn("Size", "大小。总大小", "", ItemType = "GMK")]
     public Int64 Size { get => _Size; set { if (OnPropertyChanging("Size", value)) { _Size = value; OnPropertyChanged("Size"); } } }
 
+    private NewLife.Remoting.Models.CommandStatus _Status;
+    /// <summary>状态</summary>
+    [DisplayName("状态")]
+    [Description("状态")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Status", "状态", "")]
+    public NewLife.Remoting.Models.CommandStatus Status { get => _Status; set { if (OnPropertyChanging("Status", value)) { _Status = value; OnPropertyChanged("Status"); } } }
+
     private Int32 _Period;
     /// <summary>同步周期。默认60秒</summary>
     [DisplayName("同步周期")]
@@ -163,6 +171,7 @@ public partial class FileStorage
             "Enable" => _Enable,
             "HomeDirectory" => _HomeDirectory,
             "Size" => _Size,
+            "Status" => _Status,
             "Period" => _Period,
             "Pattern" => _Pattern,
             "LastScan" => _LastScan,
@@ -184,6 +193,7 @@ public partial class FileStorage
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "HomeDirectory": _HomeDirectory = Convert.ToString(value); break;
                 case "Size": _Size = value.ToLong(); break;
+                case "Status": _Status = (NewLife.Remoting.Models.CommandStatus)value.ToInt(); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -221,6 +231,9 @@ public partial class FileStorage
 
         /// <summary>大小。总大小</summary>
         public static readonly Field Size = FindByName("Size");
+
+        /// <summary>状态</summary>
+        public static readonly Field Status = FindByName("Status");
 
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
@@ -272,6 +285,9 @@ public partial class FileStorage
 
         /// <summary>大小。总大小</summary>
         public const String Size = "Size";
+
+        /// <summary>状态</summary>
+        public const String Status = "Status";
 
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";

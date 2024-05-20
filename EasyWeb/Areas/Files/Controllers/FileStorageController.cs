@@ -7,7 +7,7 @@ using NewLife.Cube.ViewModels;
 using NewLife.Log;
 using NewLife.Web;
 using XCode.Membership;
-using static EasyWeb.Data.FileStorage;
+using EasyWeb.Services;
 
 namespace EasyWeb.Areas.Files.Controllers;
 
@@ -16,6 +16,8 @@ namespace EasyWeb.Areas.Files.Controllers;
 [FilesArea]
 public class FileStorageController : EntityController<FileStorage>
 {
+    private readonly ScanStorageService _storageService;
+
     static FileStorageController()
     {
         //LogOnChange = true;
@@ -31,21 +33,17 @@ public class FileStorageController : EntityController<FileStorage>
         {
             var df = ListFields.AddListField("details", null, "HomeDirectory");
             df.DisplayName = "查看文件";
-            df.Url = "/Files/FileEntry?storageId={StorageId}&parentId=0";
+            df.Url = "/Files/FileEntry?storageId={Id}&parentId=0";
         }
-        //{
-        //    var df = ListFields.GetField("Kind") as ListField;
-        //    df.GetValue = e => ((Int32)(e as FileStorage).Kind).ToString("X4");
-        //}
-        //ListFields.TraceUrl("TraceId");
+        {
+            var df = ListFields.AddListField("details", null, "Period");
+            df.DisplayName = "立即扫描";
+            df.Url = "/Files/FileStorage/Scan?keys={Id}";
+            df.DataAction = "action";
+        }
     }
 
-    //private readonly ITracer _tracer;
-
-    //public FileStorageController(ITracer tracer)
-    //{
-    //    _tracer = tracer;
-    //}
+    public FileStorageController(ScanStorageService storageService) => _storageService = storageService;
 
     /// <summary>高级搜索。列表页查询、导出Excel、导出Json、分享页等使用</summary>
     /// <param name="p">分页器。包含分页排序参数，以及Http请求参数</param>
@@ -59,5 +57,22 @@ public class FileStorageController : EntityController<FileStorage>
         var end = p["dtEnd"].ToDateTime();
 
         return FileStorage.Search(start, end, p["Q"], p);
+    }
+
+    [EntityAuthorize(PermissionFlags.Update)]
+    public ActionResult Scan()
+    {
+        var count = 0;
+        foreach (var key in SelectKeys)
+        {
+            var storage = FileStorage.FindById(key.ToInt());
+            if (storage != null)
+            {
+                _ = Task.Run(() => _storageService.Process(storage, null, null));
+                count++;
+            }
+        }
+
+        return JsonRefresh($"共处理[{count}]条", 1);
     }
 }

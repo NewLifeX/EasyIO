@@ -14,6 +14,9 @@ var star = services.AddStardust(null);
 var set = EasyFileSetting.Current;
 services.AddSingleton(set);
 
+services.AddSingleton<ScanStorageService>();
+services.AddSingleton<ScanSourceService>();
+
 services.AddHostedService<ScanStorageService>();
 services.AddHostedService<ScanSourceService>();
 
