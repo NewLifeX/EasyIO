@@ -20,6 +20,7 @@ namespace EasyWeb.Data;
 [BindIndex("IU_FileEntry_StorageId_ParentId_Name", true, "StorageId,ParentId,Name")]
 [BindIndex("IX_FileEntry_ParentId", false, "ParentId")]
 [BindIndex("IX_FileEntry_SourceId_ParentId", false, "SourceId,ParentId")]
+[BindIndex("IX_FileEntry_StorageId_Path", false, "StorageId,Path")]
 [BindTable("FileEntry", Description = "文件清单。详细记录每个文件源内的文件与目录信息", ConnName = "EasyFile", DbType = DatabaseType.None)]
 public partial class FileEntry
 {
@@ -71,6 +72,14 @@ public partial class FileEntry
     [DataObjectField(false, false, true, 250)]
     [BindColumn("FullName", "全路径。文件保存在本地的相对路径", "")]
     public String FullName { get => _FullName; set { if (OnPropertyChanging("FullName", value)) { _FullName = value; OnPropertyChanged("FullName"); } } }
+
+    private String _Path;
+    /// <summary>路径。用于Url的相对路径</summary>
+    [DisplayName("路径")]
+    [Description("路径。用于Url的相对路径")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("Path", "路径。用于Url的相对路径", "")]
+    public String Path { get => _Path; set { if (OnPropertyChanging("Path", value)) { _Path = value; OnPropertyChanged("Path"); } } }
 
     private Boolean _Enable;
     /// <summary>启用</summary>
@@ -246,6 +255,7 @@ public partial class FileEntry
             "Name" => _Name,
             "Title" => _Title,
             "FullName" => _FullName,
+            "Path" => _Path,
             "Enable" => _Enable,
             "ParentId" => _ParentId,
             "IsDirectory" => _IsDirectory,
@@ -277,6 +287,7 @@ public partial class FileEntry
                 case "Name": _Name = Convert.ToString(value); break;
                 case "Title": _Title = Convert.ToString(value); break;
                 case "FullName": _FullName = Convert.ToString(value); break;
+                case "Path": _Path = Convert.ToString(value); break;
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "ParentId": _ParentId = value.ToInt(); break;
                 case "IsDirectory": _IsDirectory = value.ToBoolean(); break;
@@ -342,6 +353,9 @@ public partial class FileEntry
 
         /// <summary>全路径。文件保存在本地的相对路径</summary>
         public static readonly Field FullName = FindByName("FullName");
+
+        /// <summary>路径。用于Url的相对路径</summary>
+        public static readonly Field Path = FindByName("Path");
 
         /// <summary>启用</summary>
         public static readonly Field Enable = FindByName("Enable");
@@ -423,6 +437,9 @@ public partial class FileEntry
 
         /// <summary>全路径。文件保存在本地的相对路径</summary>
         public const String FullName = "FullName";
+
+        /// <summary>路径。用于Url的相对路径</summary>
+        public const String Path = "Path";
 
         /// <summary>启用</summary>
         public const String Enable = "Enable";

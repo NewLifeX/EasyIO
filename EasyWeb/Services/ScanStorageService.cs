@@ -89,6 +89,7 @@ public class ScanStorageService : IHostedService
                 fe.ParentId = pid;
                 fe.Enable = true;
                 fe.FullName = fi.FullName.TrimStart(rootPath);
+                fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
                 fe.Size = fi.Length;
                 fe.LastWrite = fi.LastWriteTime;
                 fe.LastAccess = fi.LastAccessTime;
@@ -129,6 +130,7 @@ public class ScanStorageService : IHostedService
             fe.Enable = true;
             fe.IsDirectory = true;
             fe.FullName = di.FullName.TrimStart(rootPath);
+            fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
 
             if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
             {

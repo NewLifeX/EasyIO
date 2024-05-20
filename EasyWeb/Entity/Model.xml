@@ -70,6 +70,7 @@
         <Column Name="Name" DataType="String" Master="True" Length="250" Description="名称" />
         <Column Name="Title" DataType="String" Description="标题" />
         <Column Name="FullName" DataType="String" Length="250" Description="全路径。文件保存在本地的相对路径" />
+        <Column Name="Path" DataType="String" Description="路径。用于Url的相对路径" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="ParentId" DataType="Int32" Description="上级目录。0表示顶级" />
         <Column Name="IsDirectory" DataType="Boolean" Description="目录。当前清单是目录而不是文件" />
@@ -94,6 +95,7 @@
         <Index Columns="StorageId,ParentId,Name" Unique="True" />
         <Index Columns="ParentId" />
         <Index Columns="SourceId,ParentId" />
+        <Index Columns="StorageId,Path" />
       </Indexes>
     </Table>
     <Table Name="FileSource" Description="文件源。文件来源，定时从文件源抓取文件回到本地缓存目录，例如get.dot.net">

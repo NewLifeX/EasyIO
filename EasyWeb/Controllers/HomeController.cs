@@ -1,7 +1,9 @@
-﻿using EasyWeb.Services;
+﻿using System.Reflection.Metadata;
+using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using NewLife.Cube;
 using NewLife.Web;
+using XCode;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -36,5 +38,21 @@ public class HomeController : ControllerBaseX
         ViewBag.Title = "文件";
 
         return View(entris);
+    }
+
+    /// <summary>下载文件</summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public ActionResult DownloadFile(String file)
+    {
+        var entry = _entryService.GetFile(0, file);
+        if (entry == null) return NotFound();
+
+        // 增加浏览数
+        entry.Times++;
+        entry.LastDownload = DateTime.Now;
+        entry.SaveAsync(15_000);
+
+        return View("Info", entry);
     }
 }

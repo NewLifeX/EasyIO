@@ -33,6 +33,13 @@ app.UseEasyIO(true);
 app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "File",
+    pattern: "{*file}",
+    defaults: new { controller = "Home", action = "DownloadFile" },
+    constraints: new { file = new FileUrlConstraint() }
+);
+
 // 注册退出事件
 if (app is IHost host)
     NewLife.Model.Host.RegisterExit(() => host.StopAsync().Wait());

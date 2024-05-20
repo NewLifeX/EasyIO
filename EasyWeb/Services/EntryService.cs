@@ -1,4 +1,5 @@
 ﻿using EasyWeb.Data;
+using NewLife;
 using NewLife.Caching;
 
 namespace EasyWeb.Services;
@@ -23,5 +24,14 @@ public class EntryService
 
         return _cacheProvider.Cache.GetOrAdd($"Files:{storageId}:{parentId}",
             k => FileEntry.FindAllByStorageIdAndParentId(storageId, parentId), 60);
+    }
+
+    public FileEntry GetFile(Int32 storageId, String path)
+    {
+        if (path.IsNullOrEmpty()) return null;
+        if (storageId == 0) storageId = GetDefaultStorage()?.Id ?? 0;
+
+        return _cacheProvider.Cache.GetOrAdd($"File:{storageId}:{path}",
+            k => FileEntry.FindByStorageIdAndPath(storageId, path), 60);
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -181,6 +181,26 @@ public partial class FileEntry : Entity<FileEntry>
         if (Meta.Session.Count < 1000) return Meta.Cache.FindAll(e => e.StorageId == storageId && e.ParentId == parentId);
 
         return FindAll(_.StorageId == storageId & _.ParentId == parentId);
+    }
+
+    public static FileEntry FindByStorageIdAndPath(Int32 storageId, String path)
+    {
+        // 实体缓存
+        if (Meta.Session.Count < 1000) return Meta.Cache.Find(e => e.StorageId == storageId && e.Path == path);
+
+        return Find(_.StorageId == storageId & _.Path == path);
+    }
+
+    /// <summary>根据仓库、路径查找</summary>
+    /// <param name="storageId">仓库</param>
+    /// <param name="path">路径</param>
+    /// <returns>实体列表</returns>
+    public static IList<FileEntry> FindAllByStorageIdAndPath(Int32 storageId, String path)
+    {
+        // 实体缓存
+        if (Meta.Session.Count < 1000) return Meta.Cache.FindAll(e => e.StorageId == storageId && e.Path.EqualIgnoreCase(path));
+
+        return FindAll(_.StorageId == storageId & _.Path == path);
     }
     #endregion
 
