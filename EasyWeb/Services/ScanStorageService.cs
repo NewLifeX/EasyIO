@@ -3,6 +3,7 @@ using EasyWeb.Data;
 using NewLife;
 using NewLife.Log;
 using NewLife.Threading;
+using XCode;
 
 namespace EasyWeb.Services;
 
@@ -43,7 +44,7 @@ public class ScanStorageService : IHostedService
         }
     }
 
-    void Process(FileStorage storage, DirectoryInfo parentDir, FileEntry parent)
+    public void Process(FileStorage storage, DirectoryInfo parentDir, FileEntry parent)
     {
         var root = storage.HomeDirectory.AsDirectory();
 
@@ -68,28 +69,42 @@ public class ScanStorageService : IHostedService
         // 扫描文件
         foreach (var fi in parentDir.GetFiles(pattern))
         {
-            var fe = childs.FirstOrDefault(e => e.Name == fi.Name);
-            if (fe == null)
-                fe = new FileEntry { Name = fi.Name };
-            else
-                childs.Remove(fe);
+            try
+            {
+                var fe = childs.FirstOrDefault(e => e.Name == fi.Name);
+                if (fe == null)
+                    fe = new FileEntry { Name = fi.Name };
+                else
+                    childs.Remove(fe);
 
-            fe.StorageId = storage.Id;
-            fe.ParentId = pid;
-            fe.Enable = true;
-            fe.FullName = fi.FullName.TrimStart(rootPath);
-            fe.Size = fi.Length;
-            fe.Hash = fi.MD5().ToHex();
-            fe.LastWrite = fi.LastWriteTime;
-            fe.LastAccess = fi.LastAccessTime;
-            fe.LastScan = DateTime.Now;
+                fe.StorageId = storage.Id;
+                fe.ParentId = pid;
+                fe.Enable = true;
+                fe.FullName = fi.FullName.TrimStart(rootPath);
+                fe.Size = fi.Length;
+                fe.LastWrite = fi.LastWriteTime;
+                fe.LastAccess = fi.LastAccessTime;
+                try
+                {
+                    fe.Hash = fi.MD5().ToHex();
+                }
+                catch { }
 
-            fe.Save();
+                if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
+                {
+                    fe.LastScan = DateTime.Now;
+                    fe.Save();
+                }
 
-            // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
-            if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
+                // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
+                if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
 
-            totalSize += fe.Size;
+                totalSize += fe.Size;
+            }
+            catch (Exception ex)
+            {
+                XTrace.WriteException(ex);
+            }
         }
 
         // 扫描目录
@@ -106,9 +121,12 @@ public class ScanStorageService : IHostedService
             fe.Enable = true;
             fe.IsDirectory = true;
             fe.FullName = di.FullName.TrimStart(rootPath);
-            fe.LastScan = DateTime.Now;
 
-            fe.Save();
+            if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
+            {
+                fe.LastScan = DateTime.Now;
+                fe.Save();
+            }
 
             Process(storage, di, fe);
 
