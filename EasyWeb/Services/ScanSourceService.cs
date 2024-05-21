@@ -163,10 +163,20 @@ public class ScanSourceService : IHostedService
             var name = Path.GetFileName(item.Url);
             if (name.IsNullOrEmpty()) continue;
 
-            // 黑白名单
-            if (!source.IsMatch(name)) continue;
-
             var fe = childs.FirstOrDefault(e => e.Name == name);
+
+            // 黑白名单
+            if (!source.IsMatch(name))
+            {
+                if (fe != null)
+                {
+                    fe.Enable = false;
+                    fe.Update();
+                }
+
+                continue;
+            }
+
             if (fe != null)
                 childs.Remove(fe);
             else
@@ -183,6 +193,9 @@ public class ScanSourceService : IHostedService
             fe.Enable = true;
             fe.Remark = item.Rid;
 
+            if ((fe as IEntity).HasDirty)
+                fe.LastScan = DateTime.Now;
+
             //fe.Save();
             list.Add(fe);
         }
@@ -191,7 +204,7 @@ public class ScanSourceService : IHostedService
         // childs中有而root中没有的，需要标记禁用，长时间禁用的，需要标记已删除
         foreach (var fe in childs)
         {
-            if (fe.Enable)
+            if (fe.LastScan.AddDays(7) < DateTime.Now)
             {
                 fe.Enable = false;
                 fe.Save();
