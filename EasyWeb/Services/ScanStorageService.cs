@@ -37,7 +37,7 @@ public class ScanStorageService : IHostedService
 
             if (item.LastScan.AddSeconds(period) < DateTime.Now)
             {
-                Process(item, null, null);
+                Scan(item, null, null, 1);
 
                 item.LastScan = DateTime.Now;
                 item.Save();
@@ -45,17 +45,24 @@ public class ScanStorageService : IHostedService
         }
     }
 
-    public void Process(FileStorage storage, DirectoryInfo parentDir, FileEntry parent)
+    /// <summary>扫描指定目录</summary>
+    /// <param name="storage">存储区</param>
+    /// <param name="target">目标目录</param>
+    /// <param name="parent">父级清单</param>
+    /// <param name="level">当前层级</param>
+    public void Scan(FileStorage storage, DirectoryInfo target, FileEntry parent, Int32 level)
     {
+        if (storage.Level > 0 && level > storage.Level) return;
+
         var root = storage.HomeDirectory.AsDirectory();
 
         var pid = parent?.Id ?? 0;
         if (pid == 0)
         {
             // 根目录是否存在
-            parentDir = root;
+            target = root;
         }
-        if (!parentDir.Exists) return;
+        if (!target.Exists) return;
 
         // 设置状态为处理中
         if (parent == null)
@@ -67,7 +74,7 @@ public class ScanStorageService : IHostedService
         var pattern = storage.Pattern;
         if (pattern.IsNullOrEmpty()) pattern = "*";
 
-        XTrace.WriteLine("扫描目录：{0}", parentDir.FullName);
+        XTrace.WriteLine("扫描目录：{0}", target.FullName);
 
         var childs = FileEntry.FindAllByStorageIdAndParentId(storage.Id, pid);
 
@@ -76,7 +83,7 @@ public class ScanStorageService : IHostedService
         var rootPath = root.FullName.EnsureEnd(Runtime.Windows ? "\\" : "/");
 
         // 扫描文件
-        foreach (var fi in parentDir.GetFiles(pattern))
+        foreach (var fi in target.GetFiles(pattern))
         {
             // 跳过太长的文件
             if (fi.Name.Length > maxLength) continue;
@@ -123,7 +130,7 @@ public class ScanStorageService : IHostedService
         }
 
         // 扫描目录
-        foreach (var di in parentDir.GetDirectories(pattern))
+        foreach (var di in target.GetDirectories(pattern))
         {
             var fe = childs.FirstOrDefault(e => e.Name == di.Name);
             if (fe == null)
@@ -140,13 +147,16 @@ public class ScanStorageService : IHostedService
 
             if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
 
+            if (fe.Id == 0) fe.Insert();
+
+            if (storage.Level <= 0 || level < storage.Level)
+                Scan(storage, di, fe, level + 1);
+
             if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
             {
                 fe.LastScan = DateTime.Now;
                 fe.Save();
             }
-
-            Process(storage, di, fe);
 
             // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
             if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
@@ -157,12 +167,6 @@ public class ScanStorageService : IHostedService
         if (parent != null)
         {
             parent.Size = totalSize;
-            parent.Update();
-        }
-        else
-        {
-            storage.Size = totalSize;
-            storage.Update();
         }
 
         // childs中有而root中没有的，需要标记禁用，长时间禁用的，需要标记已删除
@@ -182,8 +186,11 @@ public class ScanStorageService : IHostedService
         // 设置状态为已完成
         if (parent == null)
         {
+            storage.Size = totalSize;
             storage.Status = CommandStatus.已完成;
             storage.Update();
+
+            XTrace.WriteLine("扫描完成！{0}", target.FullName);
         }
     }
 }

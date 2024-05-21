@@ -47,6 +47,7 @@
         <Column Name="HomeDirectory" DataType="String" Description="主目录" />
         <Column Name="Size" DataType="Int64" ItemType="GMK" Description="大小。总大小" />
         <Column Name="Status" DataType="Int32" Description="状态" Type="NewLife.Remoting.Models.CommandStatus" />
+        <Column Name="Level" DataType="Int32" Description="深度。最大搜索目录深度" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
@@ -78,7 +79,7 @@
         <Column Name="LastWrite" DataType="DateTime" Description="最后修改" />
         <Column Name="LastAccess" DataType="DateTime" Description="最后访问" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。最后一次扫描访问的时间" />
-        <Column Name="Hash" DataType="String" Description="哈希。MD5哈希" />
+        <Column Name="Hash" DataType="String" Length="500" Description="哈希。MD5哈希或SHA512" />
         <Column Name="RawUrl" DataType="String" Length="200" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
         <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
         <Column Name="LastDownload" DataType="DateTime" Description="最后下载" />

@@ -70,6 +70,14 @@ public partial class FileStorage
     [BindColumn("Status", "状态", "")]
     public NewLife.Remoting.Models.CommandStatus Status { get => _Status; set { if (OnPropertyChanging("Status", value)) { _Status = value; OnPropertyChanged("Status"); } } }
 
+    private Int32 _Level;
+    /// <summary>深度。最大搜索目录深度</summary>
+    [DisplayName("深度")]
+    [Description("深度。最大搜索目录深度")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Level", "深度。最大搜索目录深度", "")]
+    public Int32 Level { get => _Level; set { if (OnPropertyChanging("Level", value)) { _Level = value; OnPropertyChanged("Level"); } } }
+
     private Int32 _Period;
     /// <summary>同步周期。默认60秒</summary>
     [DisplayName("同步周期")]
@@ -172,6 +180,7 @@ public partial class FileStorage
             "HomeDirectory" => _HomeDirectory,
             "Size" => _Size,
             "Status" => _Status,
+            "Level" => _Level,
             "Period" => _Period,
             "Pattern" => _Pattern,
             "LastScan" => _LastScan,
@@ -194,6 +203,7 @@ public partial class FileStorage
                 case "HomeDirectory": _HomeDirectory = Convert.ToString(value); break;
                 case "Size": _Size = value.ToLong(); break;
                 case "Status": _Status = (NewLife.Remoting.Models.CommandStatus)value.ToInt(); break;
+                case "Level": _Level = value.ToInt(); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -234,6 +244,9 @@ public partial class FileStorage
 
         /// <summary>状态</summary>
         public static readonly Field Status = FindByName("Status");
+
+        /// <summary>深度。最大搜索目录深度</summary>
+        public static readonly Field Level = FindByName("Level");
 
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
@@ -288,6 +301,9 @@ public partial class FileStorage
 
         /// <summary>状态</summary>
         public const String Status = "Status";
+
+        /// <summary>深度。最大搜索目录深度</summary>
+        public const String Level = "Level";
 
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";

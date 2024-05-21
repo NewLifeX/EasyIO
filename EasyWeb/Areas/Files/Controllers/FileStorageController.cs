@@ -68,7 +68,7 @@ public class FileStorageController : EntityController<FileStorage>
             var storage = FileStorage.FindById(key.ToInt());
             if (storage != null)
             {
-                _ = Task.Run(() => _storageService.Process(storage, null, null));
+                _ = Task.Run(() => _storageService.Scan(storage, null, null, 1));
                 count++;
             }
         }

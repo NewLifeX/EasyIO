@@ -138,11 +138,11 @@ public partial class FileEntry
     public DateTime LastScan { get => _LastScan; set { if (OnPropertyChanging("LastScan", value)) { _LastScan = value; OnPropertyChanged("LastScan"); } } }
 
     private String _Hash;
-    /// <summary>哈希。MD5哈希</summary>
+    /// <summary>哈希。MD5哈希或SHA512</summary>
     [DisplayName("哈希")]
-    [Description("哈希。MD5哈希")]
-    [DataObjectField(false, false, true, 50)]
-    [BindColumn("Hash", "哈希。MD5哈希", "")]
+    [Description("哈希。MD5哈希或SHA512")]
+    [DataObjectField(false, false, true, 500)]
+    [BindColumn("Hash", "哈希。MD5哈希或SHA512", "")]
     public String Hash { get => _Hash; set { if (OnPropertyChanging("Hash", value)) { _Hash = value; OnPropertyChanged("Hash"); } } }
 
     private String _RawUrl;
@@ -378,7 +378,7 @@ public partial class FileEntry
         /// <summary>最后扫描。最后一次扫描访问的时间</summary>
         public static readonly Field LastScan = FindByName("LastScan");
 
-        /// <summary>哈希。MD5哈希</summary>
+        /// <summary>哈希。MD5哈希或SHA512</summary>
         public static readonly Field Hash = FindByName("Hash");
 
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
@@ -462,7 +462,7 @@ public partial class FileEntry
         /// <summary>最后扫描。最后一次扫描访问的时间</summary>
         public const String LastScan = "LastScan";
 
-        /// <summary>哈希。MD5哈希</summary>
+        /// <summary>哈希。MD5哈希或SHA512</summary>
         public const String Hash = "Hash";
 
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
