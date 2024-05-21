@@ -36,11 +36,11 @@
             var path = item.Path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
             <tr>
                 <td>@item.LastWrite.ToFullString("")</td>
-                <td>@(item.IsDirectory ? "<dir>" : item.Size.ToGMK())</td>
+                <td>@item.Size.ToGMK()</td>
                 <td>
                     <a href="@path" title="@item.Title">@item.Name</a>
                 </td>
-                <td>@item.Hash</td>
+                <td style="max-width:600px;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;">@(item.IsDirectory ? "<dir>" : item.Hash)</td>
             </tr>
         }
     </table>

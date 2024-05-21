@@ -1,4 +1,7 @@
-﻿namespace EasyWeb.Services;
+﻿using System.Web;
+using NewLife;
+
+namespace EasyWeb.Services;
 
 /// <summary>文件路径适配</summary>
 class FileUrlConstraint : IRouteConstraint
@@ -9,7 +12,12 @@ class FileUrlConstraint : IRouteConstraint
 
     public Boolean Match(HttpContext httpContext, IRouter route, String parameterName, RouteValueDictionary values, RouteDirection routeDirection)
     {
-        var entry = _entryService.GetFile(0, values["pathInfo"] + "");
+        var pathInfo = values["pathInfo"] + "";
+        if (pathInfo.IsNullOrEmpty()) return false;
+
+        pathInfo = HttpUtility.UrlDecode(pathInfo);
+
+        var entry = _entryService.GetFile(0, pathInfo);
         if (entry == null) return false;
 
         return !entry.IsDirectory;

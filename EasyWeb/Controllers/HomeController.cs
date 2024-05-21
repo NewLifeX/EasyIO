@@ -32,6 +32,9 @@ public class HomeController : ControllerBaseX
     /// <returns></returns>
     public ActionResult ShowDir(String pathInfo)
     {
+        if (!pathInfo.IsNullOrEmpty())
+            pathInfo = HttpUtility.UrlDecode(pathInfo);
+
         var parent = _entryService.GetFile(0, pathInfo);
         var entris = _entryService.GetFiles(0, parent?.Id ?? 0);
 
@@ -57,6 +60,10 @@ public class HomeController : ControllerBaseX
     /// <returns></returns>
     public ActionResult DownloadFile(String pathInfo)
     {
+        if (pathInfo.IsNullOrEmpty()) return NotFound();
+
+        pathInfo = HttpUtility.UrlDecode(pathInfo);
+
         var entry = _entryService.GetFile(0, pathInfo);
         if (entry == null) return NotFound();
 
