@@ -71,12 +71,16 @@ public class ScanStorageService : IHostedService
 
         var childs = FileEntry.FindAllByStorageIdAndParentId(storage.Id, pid);
 
+        var maxLength = 250;
         var totalSize = 0L;
         var rootPath = root.FullName.EnsureEnd(Runtime.Windows ? "\\" : "/");
 
         // 扫描文件
         foreach (var fi in parentDir.GetFiles(pattern))
         {
+            // 跳过太长的文件
+            if (fi.Name.Length > maxLength) continue;
+
             try
             {
                 var fe = childs.FirstOrDefault(e => e.Name == fi.Name);
@@ -98,6 +102,8 @@ public class ScanStorageService : IHostedService
                     fe.Hash = fi.MD5().ToHex();
                 }
                 catch { }
+
+                if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
 
                 if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
                 {
@@ -131,6 +137,8 @@ public class ScanStorageService : IHostedService
             fe.IsDirectory = true;
             fe.FullName = di.FullName.TrimStart(rootPath);
             fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
+
+            if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
 
             if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
             {

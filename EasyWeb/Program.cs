@@ -17,6 +17,7 @@ services.AddSingleton(set);
 services.AddSingleton<EntryService>();
 services.AddSingleton<ScanStorageService>();
 services.AddSingleton<ScanSourceService>();
+services.AddSingleton<FileUrlConstraint>();
 
 services.AddHostedService<ScanStorageService>();
 services.AddHostedService<ScanSourceService>();

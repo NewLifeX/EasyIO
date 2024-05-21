@@ -77,7 +77,7 @@ public partial class FileEntry
     /// <summary>路径。用于Url的相对路径</summary>
     [DisplayName("路径")]
     [Description("路径。用于Url的相对路径")]
-    [DataObjectField(false, false, true, 50)]
+    [DataObjectField(false, false, true, 250)]
     [BindColumn("Path", "路径。用于Url的相对路径", "")]
     public String Path { get => _Path; set { if (OnPropertyChanging("Path", value)) { _Path = value; OnPropertyChanged("Path"); } } }
 

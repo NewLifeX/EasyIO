@@ -50,7 +50,7 @@ public partial class FileSource
     /// <summary>地址</summary>
     [DisplayName("地址")]
     [Description("地址")]
-    [DataObjectField(false, false, true, 200)]
+    [DataObjectField(false, false, true, 250)]
     [BindColumn("Url", "地址", "")]
     public String Url { get => _Url; set { if (OnPropertyChanging("Url", value)) { _Url = value; OnPropertyChanged("Url"); } } }
 
