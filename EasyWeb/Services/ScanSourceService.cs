@@ -163,7 +163,7 @@ public class ScanSourceService : IHostedService
             var name = Path.GetFileName(item.Url);
             if (name.IsNullOrEmpty()) continue;
 
-            var fe = childs.FirstOrDefault(e => e.Name == name);
+            var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(name));
 
             // 黑白名单
             if (!source.IsMatch(name))
@@ -214,5 +214,7 @@ public class ScanSourceService : IHostedService
                 fe.Delete();
             }
         }
+
+        //todo 增加一个定时任务，定时检查文件是否过期，如果已经过期（7天），则删除文件，更近一步是禁用（180天），紧接着删除（360天）
     }
 }

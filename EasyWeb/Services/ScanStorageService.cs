@@ -90,7 +90,7 @@ public class ScanStorageService : IHostedService
 
             try
             {
-                var fe = childs.FirstOrDefault(e => e.Name == fi.Name);
+                var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(fi.Name));
                 if (fe == null)
                     fe = new FileEntry { Name = fi.Name };
                 else
@@ -134,7 +134,7 @@ public class ScanStorageService : IHostedService
             // 扫描目录
             foreach (var di in target.GetDirectories(pattern))
             {
-                var fe = childs.FirstOrDefault(e => e.Name == di.Name);
+                var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(di.Name));
                 if (fe == null)
                     fe = new FileEntry { Name = di.Name };
                 else
