@@ -17,6 +17,7 @@ services.AddSingleton(set);
 services.AddSingleton<EntryService>();
 services.AddSingleton<ScanStorageService>();
 services.AddSingleton<ScanSourceService>();
+services.AddSingleton<DirUrlConstraint>();
 services.AddSingleton<FileUrlConstraint>();
 
 services.AddHostedService<ScanStorageService>();
@@ -35,8 +36,15 @@ app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "File",
-    pattern: "{*file}",
+    name: "ShowDir",
+    pattern: "{*pathInfo}",
+    defaults: new { controller = "Home", action = "ShowDir" },
+    constraints: new { file = app.Services.GetRequiredService<DirUrlConstraint>() }
+);
+
+app.MapControllerRoute(
+    name: "Download",
+    pattern: "{*pathInfo}",
     defaults: new { controller = "Home", action = "DownloadFile" },
     constraints: new { file = app.Services.GetRequiredService<FileUrlConstraint>() }
 );

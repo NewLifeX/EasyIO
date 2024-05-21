@@ -1,23 +1,44 @@
 ﻿@using System.Web
-@model IList<FileEntry>
+@using EasyWeb.Models
+@model DirectoryModel
 @{
-}
-<table class="table table-bordered table-hover table-striped table-condensed">
-    <tr>
-        <th>时间</th>
-        <th>大小</th>
-        <th>名称</th>
-        <th>哈希（MD5）</th>
-    </tr>
-    @foreach (var item in Model)
+    var ps = new List<FileEntry>();
+    var p = Model.Parent;
+    while (p != null)
     {
-        <tr>
-            <td>@item.LastWrite.ToFullString("")</td>
-            <td>@(item.IsDirectory ? "<dir>" : item.Size.ToGMK())</td>
-            <td>
-                <a href="@(HttpUtility.UrlEncode(item.Name))" title="@item.Title">@item.Name</a>
-            </td>
-            <td>@item.Hash</td>
-        </tr>
+        ps.Add(p);
+        p = p.Parent;
     }
-</table>
+    ps.Add(new FileEntry { Path = "" });
+}
+<section id="main">
+    <header>
+        <h1>
+            目录
+            @for (var i = ps.Count - 1; i >= 0; i--)
+            {
+                <a href="/@ps[i].Path">@ps[i].Name/</a>
+            }
+        </h1>
+    </header>
+    <table class="table table-bordered table-hover table-striped table-condensed">
+        <tr>
+            <th>时间</th>
+            <th>大小</th>
+            <th>名称</th>
+            <th>哈希</th>
+        </tr>
+        @foreach (var item in Model.Entries)
+        {
+            var path = item.Path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/");
+            <tr>
+                <td>@item.LastWrite.ToFullString("")</td>
+                <td>@(item.IsDirectory ? "<dir>" : item.Size.ToGMK())</td>
+                <td>
+                    <a href="@path" title="@item.Title">@item.Name</a>
+                </td>
+                <td>@item.Hash</td>
+            </tr>
+        }
+    </table>
+</section>

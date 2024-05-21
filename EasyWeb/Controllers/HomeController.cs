@@ -1,4 +1,6 @@
 ﻿using System.Web;
+using EasyWeb.Data;
+using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using NewLife.Cube;
@@ -22,21 +24,32 @@ public class HomeController : ControllerBaseX
     /// <returns></returns>
     public ActionResult Index()
     {
-        var page = new Pager(WebHelper.Params);
-        var parentId = page["parentId"].ToInt();
+        return ShowDir(null);
+    }
 
-        //var list = FileStorage.FindAllWithCache().FirstOrDefault(e => e.Enable);
-        //var entris = FileEntry.FindAllByStorageIdAndParentId(list.Id, 0).Where(e => e.Enable).ToList();
-
-        var entris = _entryService.GetFiles(0, parentId);
+    /// <summary>显示目录</summary>
+    /// <param name="pathInfo"></param>
+    /// <returns></returns>
+    public ActionResult ShowDir(String pathInfo)
+    {
+        var parent = _entryService.GetFile(0, pathInfo);
+        var entris = _entryService.GetFiles(0, parent?.Id ?? 0);
 
         // 目录优先，然后按照名称排序
         entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
 
-        //PageSetting.EnableNavbar = false;
-        ViewBag.Title = "文件";
+        var model = new DirectoryModel
+        {
+            Parent = parent,
+            Entries = entris,
+        };
 
-        return View(entris);
+        if (parent != null)
+            ViewBag.Title = parent.Path;
+        else
+            ViewBag.Title = "Home";
+
+        return View("Index", model);
     }
 
     /// <summary>下载文件</summary>
