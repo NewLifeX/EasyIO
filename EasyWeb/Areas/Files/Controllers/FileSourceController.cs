@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using EasyWeb.Data;
+﻿using EasyWeb.Data;
+using EasyWeb.Services;
+using Microsoft.AspNetCore.Mvc;
 using NewLife;
 using NewLife.Cube;
-using NewLife.Cube.Extensions;
-using NewLife.Cube.ViewModels;
-using NewLife.Log;
 using NewLife.Web;
 using XCode.Membership;
-using static EasyWeb.Data.FileSource;
 
 namespace EasyWeb.Areas.Files.Controllers;
 
@@ -42,12 +39,9 @@ public class FileSourceController : EntityController<FileSource>
         //ListFields.TraceUrl("TraceId");
     }
 
-    //private readonly ITracer _tracer;
+    private readonly ScanSourceService _sourceService;
 
-    //public FileSourceController(ITracer tracer)
-    //{
-    //    _tracer = tracer;
-    //}
+    public FileSourceController(ScanSourceService sourceService) => _sourceService = sourceService;
 
     /// <summary>高级搜索。列表页查询、导出Excel、导出Json、分享页等使用</summary>
     /// <param name="p">分页器。包含分页排序参数，以及Http请求参数</param>
@@ -61,5 +55,25 @@ public class FileSourceController : EntityController<FileSource>
         var end = p["dtEnd"].ToDateTime();
 
         return FileSource.Search(start, end, p["Q"], p);
+    }
+
+    [EntityAuthorize(PermissionFlags.Update)]
+    public ActionResult Scan()
+    {
+        var count = 0;
+        foreach (var key in SelectKeys)
+        {
+            var source = FileSource.FindById(key.ToInt());
+            if (source != null)
+            {
+                if (source.Kind.EqualIgnoreCase("dotNet"))
+                {
+                    _ = Task.Run(() => _sourceService.ScanDotNet(source));
+                    count++;
+                }
+            }
+        }
+
+        return JsonRefresh($"共处理[{count}]条", 1);
     }
 }

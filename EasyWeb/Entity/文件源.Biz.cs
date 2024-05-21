@@ -62,22 +62,7 @@ public partial class FileSource : Entity<FileSource>
         // 建议先调用基类方法，基类方法会做一些统一处理
         if (!base.Valid(method)) return false;
 
-        // 在新插入数据或者修改了指定字段时进行修正
-
-        // 处理当前已登录用户信息，可以由UserModule过滤器代劳
-        /*var user = ManageProvider.User;
-        if (user != null)
-        {
-            if (method == DataMethod.Insert && !Dirtys[nameof(CreateUserId)]) CreateUserId = user.ID;
-            if (!Dirtys[nameof(UpdateUserId)]) UpdateUserId = user.ID;
-        }*/
-        //if (method == DataMethod.Insert && !Dirtys[nameof(CreateTime)]) CreateTime = DateTime.Now;
-        //if (!Dirtys[nameof(UpdateTime)]) UpdateTime = DateTime.Now;
-        //if (method == DataMethod.Insert && !Dirtys[nameof(CreateIP)]) CreateIP = ManageProvider.UserHost;
-        //if (!Dirtys[nameof(UpdateIP)]) UpdateIP = ManageProvider.UserHost;
-
-        // 检查唯一索引
-        // CheckExist(method == DataMethod.Insert, nameof(Name));
+        if (StorageId == 0) StorageId = FileStorage.FindAllWithCache().FirstOrDefault(e => e.Enable)?.Id ?? 0;
 
         return true;
     }
@@ -91,11 +76,12 @@ public partial class FileSource : Entity<FileSource>
 
         if (XTrace.Debug) XTrace.WriteLine("开始初始化FileSource[文件源]数据……");
 
+        // https://github.com/dotnet/core/blob/main/release-notes/releases-index.json
         var entity = new FileSource
         {
             Name = "dotnet6",
             Kind = "dotNet",
-            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0",
+            Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json",
             Enable = true,
             Period = 3600
         };
@@ -105,7 +91,7 @@ public partial class FileSource : Entity<FileSource>
         {
             Name = "dotnet7",
             Kind = "dotNet",
-            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/7.0",
+            Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json",
             Enable = true,
             Period = 3600
         };
@@ -115,7 +101,7 @@ public partial class FileSource : Entity<FileSource>
         {
             Name = "dotnet8",
             Kind = "dotNet",
-            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0",
+            Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/8.0/releases.json",
             Enable = true,
             Period = 3600
         };
@@ -125,7 +111,7 @@ public partial class FileSource : Entity<FileSource>
         {
             Name = "dotnet9",
             Kind = "dotNet",
-            Url = "https://dotnet.microsoft.com/zh-cn/download/dotnet/9.0",
+            Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/9.0/releases.json",
             Enable = true,
             Period = 3600
         };
@@ -133,20 +119,6 @@ public partial class FileSource : Entity<FileSource>
 
         if (XTrace.Debug) XTrace.WriteLine("完成初始化FileSource[文件源]数据！");
     }
-
-    ///// <summary>已重载。基类先调用Valid(true)验证数据，然后在事务保护内调用OnInsert</summary>
-    ///// <returns></returns>
-    //public override Int32 Insert()
-    //{
-    //    return base.Insert();
-    //}
-
-    ///// <summary>已重载。在事务保护范围内处理业务，位于Valid之后</summary>
-    ///// <returns></returns>
-    //protected override Int32 OnDelete()
-    //{
-    //    return base.OnDelete();
-    //}
     #endregion
 
     #region 扩展属性
