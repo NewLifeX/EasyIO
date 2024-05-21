@@ -1,9 +1,8 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Web;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using NewLife.Cube;
 using NewLife.Web;
-using XCode;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -53,6 +52,12 @@ public class HomeController : ControllerBaseX
         entry.LastDownload = DateTime.Now;
         entry.SaveAsync(15_000);
 
-        return View("Info", entry);
+        // 组装本地路径
+        var path = entry.FullName;
+        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(entry.Path);
+
+        path = path.GetFullPath();
+
+        return PhysicalFile(path, "application/octet-stream", HttpUtility.HtmlEncode(entry.Name), entry.LastWrite, null, true);
     }
 }
