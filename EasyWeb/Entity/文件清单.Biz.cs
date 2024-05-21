@@ -32,8 +32,8 @@ public partial class FileEntry : Entity<FileEntry>
     static FileEntry()
     {
         // 累加字段，生成 Update xx Set Count=Count+1234 Where xxx
-        //var df = Meta.Factory.AdditionalFields;
-        //df.Add(nameof(StorageId));
+        var df = Meta.Factory.AdditionalFields;
+        df.Add(nameof(Times));
 
         // 过滤器 UserModule、TimeModule、IPModule
         Meta.Modules.Add<TimeModule>();

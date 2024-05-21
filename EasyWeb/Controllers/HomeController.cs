@@ -53,11 +53,11 @@ public class HomeController : ControllerBaseX
     }
 
     /// <summary>下载文件</summary>
-    /// <param name="file"></param>
+    /// <param name="pathInfo"></param>
     /// <returns></returns>
-    public ActionResult DownloadFile(String file)
+    public ActionResult DownloadFile(String pathInfo)
     {
-        var entry = _entryService.GetFile(0, file);
+        var entry = _entryService.GetFile(0, pathInfo);
         if (entry == null) return NotFound();
 
         // 增加浏览数

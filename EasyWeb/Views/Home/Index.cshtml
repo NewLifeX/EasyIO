@@ -13,13 +13,16 @@
 }
 <section id="main">
     <header>
-        <h1>
-            目录
-            @for (var i = ps.Count - 1; i >= 0; i--)
-            {
-                <a href="/@ps[i].Path">@ps[i].Name/</a>
-            }
-        </h1>
+        @if (ps.Count > 1)
+        {
+            <h1>
+                目录
+                @for (var i = ps.Count - 1; i >= 0; i--)
+                {
+                    <a href="/@ps[i].Path">@ps[i].Name/</a>
+                }
+            </h1>
+        }
     </header>
     <table class="table table-bordered table-hover table-striped table-condensed">
         <tr>
@@ -30,7 +33,7 @@
         </tr>
         @foreach (var item in Model.Entries)
         {
-            var path = item.Path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/");
+            var path = item.Path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
             <tr>
                 <td>@item.LastWrite.ToFullString("")</td>
                 <td>@(item.IsDirectory ? "<dir>" : item.Size.ToGMK())</td>

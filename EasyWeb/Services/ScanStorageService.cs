@@ -129,39 +129,41 @@ public class ScanStorageService : IHostedService
             }
         }
 
-        // 扫描目录
-        foreach (var di in target.GetDirectories(pattern))
+        if (storage.Level <= 0 || level < storage.Level)
         {
-            var fe = childs.FirstOrDefault(e => e.Name == di.Name);
-            if (fe == null)
-                fe = new FileEntry { Name = di.Name };
-            else
-                childs.Remove(fe);
+            // 扫描目录
+            foreach (var di in target.GetDirectories(pattern))
+            {
+                var fe = childs.FirstOrDefault(e => e.Name == di.Name);
+                if (fe == null)
+                    fe = new FileEntry { Name = di.Name };
+                else
+                    childs.Remove(fe);
 
-            fe.StorageId = storage.Id;
-            fe.ParentId = pid;
-            fe.Enable = true;
-            fe.IsDirectory = true;
-            fe.FullName = di.FullName.TrimStart(rootPath);
-            fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
+                fe.StorageId = storage.Id;
+                fe.ParentId = pid;
+                fe.Enable = true;
+                fe.IsDirectory = true;
+                fe.FullName = di.FullName.TrimStart(rootPath);
+                fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
 
-            if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
+                if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
 
-            if (fe.Id == 0) fe.Insert();
+                if (fe.Id == 0) fe.Insert();
 
-            if (storage.Level <= 0 || level < storage.Level)
                 Scan(storage, di, fe, level + 1);
 
-            if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
-            {
-                fe.LastScan = DateTime.Now;
-                fe.Save();
+                if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
+                {
+                    fe.LastScan = DateTime.Now;
+                    fe.Save();
+                }
+
+                // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
+                if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
+
+                totalSize += fe.Size;
             }
-
-            // 更新目录的最后修改时间，层层叠加，让上级目录知道内部有文件被修改
-            if (parent != null && parent.LastWrite < fe.LastWrite) parent.LastWrite = fe.LastWrite;
-
-            totalSize += fe.Size;
         }
 
         if (parent != null)
