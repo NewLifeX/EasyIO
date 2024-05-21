@@ -20,6 +20,6 @@ class FileUrlConstraint : IRouteConstraint
         var entry = _entryService.GetFile(0, pathInfo);
         if (entry == null) return false;
 
-        return !entry.IsDirectory;
+        return entry.Enable && !entry.IsDirectory;
     }
 }

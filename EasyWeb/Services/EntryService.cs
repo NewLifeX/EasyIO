@@ -23,7 +23,7 @@ public class EntryService
         if (storageId == 0) storageId = GetDefaultStorage()?.Id ?? 0;
 
         return _cacheProvider.Cache.GetOrAdd($"Files:{storageId}:{parentId}",
-            k => FileEntry.FindAllByStorageIdAndParentId(storageId, parentId), 60);
+            k => FileEntry.Search(storageId, parentId, true), 60);
     }
 
     public FileEntry GetFile(Int32 storageId, String path)

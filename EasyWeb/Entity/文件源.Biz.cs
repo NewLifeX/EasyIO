@@ -83,7 +83,8 @@ public partial class FileSource : Entity<FileSource>
             Kind = "dotNet",
             Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/6.0/releases.json",
             Enable = true,
-            Period = 3600
+            Period = 86400,
+            Blacks = "*preview*,*rc*",
         };
         entity.Insert();
 
@@ -93,7 +94,8 @@ public partial class FileSource : Entity<FileSource>
             Kind = "dotNet",
             Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json",
             Enable = true,
-            Period = 3600
+            Period = 86400,
+            Blacks = "*preview*,*rc*",
         };
         entity.Insert();
 
@@ -103,7 +105,8 @@ public partial class FileSource : Entity<FileSource>
             Kind = "dotNet",
             Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/8.0/releases.json",
             Enable = true,
-            Period = 3600
+            Period = 86400,
+            Blacks = "*preview*,*rc*",
         };
         entity.Insert();
 
@@ -113,7 +116,8 @@ public partial class FileSource : Entity<FileSource>
             Kind = "dotNet",
             Url = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/9.0/releases.json",
             Enable = true,
-            Period = 3600
+            Period = 86400,
+            //Blacks = "preview,rc",
         };
         entity.Insert();
 
@@ -172,7 +176,7 @@ public partial class FileSource : Entity<FileSource>
 
         if (!name.IsNullOrEmpty()) exp &= _.Name == name;
         exp &= _.UpdateTime.Between(start, end);
-        if (!key.IsNullOrEmpty()) exp &= _.Name.Contains(key) | _.Kind.Contains(key) | _.Url.Contains(key) | _.Pattern.Contains(key) | _.CreateIP.Contains(key) | _.UpdateIP.Contains(key) | _.Remark.Contains(key);
+        if (!key.IsNullOrEmpty()) exp &= _.Name.Contains(key) | _.Kind.Contains(key) | _.Url.Contains(key) | _.CreateIP.Contains(key) | _.UpdateIP.Contains(key) | _.Remark.Contains(key);
 
         return FindAll(exp, page);
     }
@@ -189,5 +193,22 @@ public partial class FileSource : Entity<FileSource>
     #endregion
 
     #region 业务操作
+    private String[] _blacks;
+    private String[] _whites;
+    public Boolean IsMatch(String input)
+    {
+        // 黑白名单
+        _blacks ??= Blacks?.Split(",") ?? [];
+        _whites ??= Whites?.Split(",") ?? [];
+
+        // 如果指定黑名单，只要命中，则不匹配
+        if (_blacks.Length > 0 && _blacks.Any(e => e.IsMatch(input))) return false;
+
+        // 如果指定白名单，则必须命中
+        if (_whites.Length > 0) return _whites.Any(e => e.IsMatch(input));
+
+        // 如果未指定白名单，则全部通过
+        return true;
+    }
     #endregion
 }

@@ -86,13 +86,21 @@ public partial class FileSource
     [BindColumn("Period", "同步周期。默认60秒", "")]
     public Int32 Period { get => _Period; set { if (OnPropertyChanging("Period", value)) { _Period = value; OnPropertyChanged("Period"); } } }
 
-    private String _Pattern;
-    /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
-    [DisplayName("匹配规则")]
-    [Description("匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开")]
+    private String _Whites;
+    /// <summary>白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+    [DisplayName("白名单")]
+    [Description("白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开")]
     [DataObjectField(false, false, true, 50)]
-    [BindColumn("Pattern", "匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开", "")]
-    public String Pattern { get => _Pattern; set { if (OnPropertyChanging("Pattern", value)) { _Pattern = value; OnPropertyChanged("Pattern"); } } }
+    [BindColumn("Whites", "白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开", "")]
+    public String Whites { get => _Whites; set { if (OnPropertyChanging("Whites", value)) { _Whites = value; OnPropertyChanged("Whites"); } } }
+
+    private String _Blacks;
+    /// <summary>黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开</summary>
+    [DisplayName("黑名单")]
+    [Description("黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("Blacks", "黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开", "")]
+    public String Blacks { get => _Blacks; set { if (OnPropertyChanging("Blacks", value)) { _Blacks = value; OnPropertyChanged("Blacks"); } } }
 
     private DateTime _LastScan;
     /// <summary>最后扫描。记录最后一次扫描时间</summary>
@@ -182,7 +190,8 @@ public partial class FileSource
             "StorageId" => _StorageId,
             "RootPath" => _RootPath,
             "Period" => _Period,
-            "Pattern" => _Pattern,
+            "Whites" => _Whites,
+            "Blacks" => _Blacks,
             "LastScan" => _LastScan,
             "CreateUserId" => _CreateUserId,
             "CreateTime" => _CreateTime,
@@ -205,7 +214,8 @@ public partial class FileSource
                 case "StorageId": _StorageId = value.ToInt(); break;
                 case "RootPath": _RootPath = Convert.ToString(value); break;
                 case "Period": _Period = value.ToInt(); break;
-                case "Pattern": _Pattern = Convert.ToString(value); break;
+                case "Whites": _Whites = Convert.ToString(value); break;
+                case "Blacks": _Blacks = Convert.ToString(value); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
@@ -259,8 +269,11 @@ public partial class FileSource
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
 
-        /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
-        public static readonly Field Pattern = FindByName("Pattern");
+        /// <summary>白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+        public static readonly Field Whites = FindByName("Whites");
+
+        /// <summary>黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开</summary>
+        public static readonly Field Blacks = FindByName("Blacks");
 
         /// <summary>最后扫描。记录最后一次扫描时间</summary>
         public static readonly Field LastScan = FindByName("LastScan");
@@ -316,8 +329,11 @@ public partial class FileSource
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";
 
-        /// <summary>匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
-        public const String Pattern = "Pattern";
+        /// <summary>白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开</summary>
+        public const String Whites = "Whites";
+
+        /// <summary>黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开</summary>
+        public const String Blacks = "Blacks";
 
         /// <summary>最后扫描。记录最后一次扫描时间</summary>
         public const String LastScan = "LastScan";

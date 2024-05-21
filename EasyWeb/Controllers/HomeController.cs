@@ -35,8 +35,11 @@ public class HomeController : ControllerBaseX
         if (!pathInfo.IsNullOrEmpty())
             pathInfo = HttpUtility.UrlDecode(pathInfo);
 
+        var pid = 0;
         var parent = _entryService.GetFile(0, pathInfo);
-        var entris = _entryService.GetFiles(0, parent?.Id ?? 0);
+        if (parent != null && parent.Enable) pid = parent.Id;
+
+        var entris = _entryService.GetFiles(0, pid);
 
         // 目录优先，然后按照名称排序
         entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
@@ -65,7 +68,7 @@ public class HomeController : ControllerBaseX
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
         var entry = _entryService.GetFile(0, pathInfo);
-        if (entry == null) return NotFound();
+        if (entry == null || !entry.Enable) return NotFound();
 
         // 增加浏览数
         entry.Times++;
@@ -78,6 +81,9 @@ public class HomeController : ControllerBaseX
 
         path = path.GetFullPath();
 
-        return PhysicalFile(path, "application/octet-stream", HttpUtility.HtmlEncode(entry.Name), entry.LastWrite, null, true);
+        var last = entry.LastWrite;
+        if (last.Year < 2000) last = entry.UpdateTime;
+
+        return PhysicalFile(path, "application/octet-stream", HttpUtility.HtmlEncode(entry.Name), last, null, true);
     }
 }

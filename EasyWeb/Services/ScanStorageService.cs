@@ -76,7 +76,7 @@ public class ScanStorageService : IHostedService
 
         XTrace.WriteLine("扫描目录：{0}", target.FullName);
 
-        var childs = FileEntry.FindAllByStorageIdAndParentId(storage.Id, pid);
+        var childs = FileEntry.Search(storage.Id, pid, null);
 
         var maxLength = 250;
         var totalSize = 0L;

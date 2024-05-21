@@ -185,6 +185,17 @@ public partial class FileEntry : Entity<FileEntry>
         return FindAll(exp, page);
     }
 
+    public static IList<FileEntry> Search(Int32 storageId, Int32 parentId, Boolean? enable)
+    {
+        var exp = new WhereExpression();
+
+        if (storageId >= 0) exp &= _.StorageId == storageId;
+        if (parentId >= 0) exp &= _.ParentId == parentId;
+        if (enable != null) exp &= _.Enable == enable;
+
+        return FindAll(exp);
+    }
+
     // Select Count(Id) as Id,Category From FileEntry Where CreateTime>'2020-01-24 00:00:00' Group By Category Order By Id Desc limit 20
     //static readonly FieldCache<FileEntry> _CategoryCache = new FieldCache<FileEntry>(nameof(Category))
     //{

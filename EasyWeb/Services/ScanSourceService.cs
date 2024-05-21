@@ -99,11 +99,24 @@ public class ScanSourceService : IHostedService
                     var ver = rel["release-version"] + "";
                     if (ver.IsNullOrEmpty()) continue;
 
+                    // 版本目录。每个版本一个目录
+                    var fe = childs.FirstOrDefault(e => e.Name == ver);
+
+                    // 黑白名单过滤
+                    if (!source.IsMatch(ver))
+                    {
+                        if (fe != null)
+                        {
+                            fe.Enable = false;
+                            fe.Update();
+                        }
+
+                        continue;
+                    }
+
                     using var span2 = _tracer?.NewSpan("ScanDotNet-Release", ver);
                     try
                     {
-                        // 版本目录。每个版本一个目录
-                        var fe = childs.FirstOrDefault(e => e.Name == ver);
                         fe ??= new FileEntry { Name = ver };
                         fe.SourceId = root.Id;
                         fe.StorageId = root.StorageId;
@@ -111,6 +124,7 @@ public class ScanSourceService : IHostedService
                         fe.Path = $"{root.Path}/{ver}";
                         fe.IsDirectory = true;
                         fe.Enable = true;
+                        fe.LastWrite = rel["release-date"].ToDateTime();
                         fe.Remark = rel["release-notes"] + "";
                         fe.Save();
 
@@ -147,6 +161,11 @@ public class ScanSourceService : IHostedService
         foreach (var item in ver.Files)
         {
             var name = Path.GetFileName(item.Url);
+            if (name.IsNullOrEmpty()) continue;
+
+            // 黑白名单
+            if (!source.IsMatch(name)) continue;
+
             var fe = childs.FirstOrDefault(e => e.Name == name);
             if (fe != null)
                 childs.Remove(fe);
