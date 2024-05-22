@@ -11,6 +11,10 @@ namespace EasyWeb.Services;
 public class ScanStorageService : IHostedService
 {
     private TimerX _timer;
+    private readonly ITracer _tracer;
+
+    public ScanStorageService(ITracer tracer) => _tracer = tracer;
+
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
         _timer = new TimerX(DoScan, null, 3_000, 60_000);
@@ -53,6 +57,8 @@ public class ScanStorageService : IHostedService
     public void Scan(FileStorage storage, DirectoryInfo target, FileEntry parent, Int32 level)
     {
         if (storage.Level > 0 && level > storage.Level) return;
+
+        using var span = _tracer?.NewSpan("ScanStorage", new { storage.Name, target.FullName, parent.Path, level });
 
         var root = storage.HomeDirectory.AsDirectory();
 
@@ -99,21 +105,23 @@ public class ScanStorageService : IHostedService
                 fe.StorageId = storage.Id;
                 fe.ParentId = pid;
                 fe.Enable = true;
+                fe.IsDirectory = false;
                 fe.FullName = fi.FullName.TrimStart(rootPath);
                 fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
                 fe.Size = fi.Length;
                 fe.LastWrite = fi.LastWriteTime;
                 fe.LastAccess = fi.LastAccessTime;
-                try
-                {
-                    fe.Hash = fi.MD5().ToHex();
-                }
-                catch { }
-
                 if (fe.FullName.Length > maxLength || fe.Path.Length > maxLength) continue;
 
                 if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
                 {
+                    // 只有数据有变化时才计算MD5，否则不要浪费时间
+                    try
+                    {
+                        fe.Hash = fi.MD5().ToHex();
+                    }
+                    catch { }
+
                     fe.LastScan = DateTime.Now;
                     fe.Save();
                 }
