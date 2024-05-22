@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Web;
+﻿using System.Web;
 using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -65,12 +64,12 @@ public class HomeController : ControllerBaseX
     /// <returns></returns>
     public async Task<ActionResult> DownloadFile(String pathInfo)
     {
-        if (pathInfo.IsNullOrEmpty()) return NotFound();
+        if (pathInfo.IsNullOrEmpty()) return NotFound("路径为空");
 
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
         var (entry, link) = _entryService.RetrieveFile(0, pathInfo);
-        if (entry == null || !entry.Enable) return NotFound();
+        if (entry == null || !entry.Enable) return NotFound("未找到文件清单");
 
         // 链接跳转到目标
         if (link != null && link.LinkRedirect)
@@ -101,7 +100,7 @@ public class HomeController : ControllerBaseX
         if (!System.IO.File.Exists(path))
         {
             if (!await _entryService.DownloadAsync(fe, path))
-                return NotFound();
+                return NotFound("下载失败");
         }
 
         // 文件下载使用原始访问的名字和时间

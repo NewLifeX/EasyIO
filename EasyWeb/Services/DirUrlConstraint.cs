@@ -13,7 +13,7 @@ class DirUrlConstraint : IRouteConstraint
     public Boolean Match(HttpContext httpContext, IRouter route, String parameterName, RouteValueDictionary values, RouteDirection routeDirection)
     {
         var pathInfo = values["pathInfo"] + "";
-        if (pathInfo.IsNullOrEmpty()) return false;
+        if (pathInfo.IsNullOrEmpty() || pathInfo.StartsWithIgnoreCase("Admin/", "Cube/")) return false;
 
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
