@@ -12,9 +12,14 @@ namespace EasyWeb.Services;
 public class ScanSourceService : IHostedService
 {
     private TimerX _timer;
+    private readonly EntryService _entryService;
     private readonly ITracer _tracer;
 
-    public ScanSourceService(ITracer tracer) => _tracer = tracer;
+    public ScanSourceService(EntryService entryService, ITracer tracer)
+    {
+        _entryService = entryService;
+        _tracer = tracer;
+    }
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
@@ -151,15 +156,15 @@ public class ScanSourceService : IHostedService
     {
         if (release == null) return;
 
-        var ver = JsonHelper.Convert<ReleaseVersion>(release);
-        if (ver == null || ver.Version.IsNullOrEmpty()) return;
-        if (ver.Files == null || ver.Files.Count == 0) return;
+        var rver = JsonHelper.Convert<ReleaseVersion>(release);
+        if (rver == null || rver.Version.IsNullOrEmpty()) return;
+        if (rver.Files == null || rver.Files.Count == 0) return;
 
-        XTrace.WriteLine("分析：{0}", ver.Version);
+        XTrace.WriteLine("分析：{0}", rver.Version);
 
         var list = new List<FileEntry>();
         var childs = FileEntry.FindAllByParentId(parent.Id);
-        foreach (var item in ver.Files)
+        foreach (var item in rver.Files)
         {
             var name = Path.GetFileName(item.Url);
             if (name.IsNullOrEmpty()) continue;
@@ -193,6 +198,9 @@ public class ScanSourceService : IHostedService
             fe.Hash = item.Hash;
             fe.Enable = true;
             fe.Remark = item.Rid;
+
+            // 解析版本号
+            _entryService.FixVersionAndTag(fe);
 
             if (fe.LastWrite.Year < 2000) fe.LastWrite = parent.LastWrite;
 

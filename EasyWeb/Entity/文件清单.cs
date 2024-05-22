@@ -114,12 +114,20 @@ public partial class FileEntry
     public Int64 Size { get => _Size; set { if (OnPropertyChanging("Size", value)) { _Size = value; OnPropertyChanged("Size"); } } }
 
     private Int32 _Version;
-    /// <summary>版本顺序。用于排序</summary>
-    [DisplayName("版本顺序")]
-    [Description("版本顺序。用于排序")]
+    /// <summary>版本。用于排序</summary>
+    [DisplayName("版本")]
+    [Description("版本。用于排序")]
     [DataObjectField(false, false, false, 0)]
-    [BindColumn("Version", "版本顺序。用于排序", "")]
+    [BindColumn("Version", "版本。用于排序", "")]
     public Int32 Version { get => _Version; set { if (OnPropertyChanging("Version", value)) { _Version = value; OnPropertyChanged("Version"); } } }
+
+    private String _Tag;
+    /// <summary>标签。类型标签</summary>
+    [DisplayName("标签")]
+    [Description("标签。类型标签")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("Tag", "标签。类型标签", "")]
+    public String Tag { get => _Tag; set { if (OnPropertyChanging("Tag", value)) { _Tag = value; OnPropertyChanged("Tag"); } } }
 
     private DateTime _LastWrite;
     /// <summary>最后修改</summary>
@@ -285,6 +293,7 @@ public partial class FileEntry
             "IsDirectory" => _IsDirectory,
             "Size" => _Size,
             "Version" => _Version,
+            "Tag" => _Tag,
             "LastWrite" => _LastWrite,
             "LastAccess" => _LastAccess,
             "LastScan" => _LastScan,
@@ -320,6 +329,7 @@ public partial class FileEntry
                 case "IsDirectory": _IsDirectory = value.ToBoolean(); break;
                 case "Size": _Size = value.ToLong(); break;
                 case "Version": _Version = value.ToInt(); break;
+                case "Tag": _Tag = Convert.ToString(value); break;
                 case "LastWrite": _LastWrite = value.ToDateTime(); break;
                 case "LastAccess": _LastAccess = value.ToDateTime(); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -407,8 +417,11 @@ public partial class FileEntry
         /// <summary>大小。文件大小</summary>
         public static readonly Field Size = FindByName("Size");
 
-        /// <summary>版本顺序。用于排序</summary>
+        /// <summary>版本。用于排序</summary>
         public static readonly Field Version = FindByName("Version");
+
+        /// <summary>标签。类型标签</summary>
+        public static readonly Field Tag = FindByName("Tag");
 
         /// <summary>最后修改</summary>
         public static readonly Field LastWrite = FindByName("LastWrite");
@@ -500,8 +513,11 @@ public partial class FileEntry
         /// <summary>大小。文件大小</summary>
         public const String Size = "Size";
 
-        /// <summary>版本顺序。用于排序</summary>
+        /// <summary>版本。用于排序</summary>
         public const String Version = "Version";
+
+        /// <summary>标签。类型标签</summary>
+        public const String Tag = "Tag";
 
         /// <summary>最后修改</summary>
         public const String LastWrite = "LastWrite";

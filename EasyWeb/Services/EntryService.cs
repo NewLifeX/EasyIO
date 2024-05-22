@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Xml.Linq;
 using EasyWeb.Data;
 using NewLife;
 using NewLife.Caching;
@@ -216,7 +217,7 @@ public class EntryService
             foreach (var item in childs)
             {
                 var rs = MatchLink(storageId, item.Id, matchs[1..]);
-                if (rs != null && (fe == null || rs.LastWrite > fe.LastWrite))
+                if (rs != null && (fe == null || rs.Version > fe.Version))
                 {
                     fe = rs;
                 }
@@ -224,5 +225,49 @@ public class EntryService
 
             return fe;
         }
+    }
+
+    public void FixVersionAndTag(FileEntry entry)
+    {
+        var name = entry.Name;
+        if (name.IsNullOrEmpty() || !name.Contains("net") && !name.Contains("runtime")) return;
+
+        name = name.TrimEnd(".tar.gz", ".zip", ".exe", ".pkg");
+
+        var ver = GetVersion(name);
+        if (!ver.IsNullOrEmpty())
+        {
+            if (Version.TryParse(ver, out var v))
+            {
+                var n = 0;
+                if (v.Major > 0) n += v.Major * 100_00_00;
+                if (v.Minor > 0) n += v.Minor * 100_00;
+                if (v.Build > 0) n += v.Build * 100;
+                if (v.Revision > 0) n += v.Revision;
+
+                entry.Version = n;
+            }
+            entry.Tag = name.Split('-').Where(e => e != ver && !e.Contains("rc") && !e.Contains("preview")).Join("-");
+        }
+    }
+
+    String GetVersion(String name)
+    {
+        // 	aspnetcore-runtime-composite-9.0.0-preview.4.24267.6-linux-musl-arm64.tar.gz
+
+        var p = name.LastIndexOf("-win-");
+        if (p < 0) p = name.LastIndexOf("-linux-");
+        if (p < 0) p = name.LastIndexOf("-osx-");
+        if (p < 0) return null;
+
+        name = name[..p];
+        var ss = name.Split('-');
+
+        for (var i = ss.Length - 1; i >= 0; i--)
+        {
+            if (Version.TryParse(ss[i], out var ver) && ver.Major > 0) return ss[i];
+        }
+
+        return null;
     }
 }

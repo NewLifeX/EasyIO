@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EasyWeb\EasyWeb.csproj" />
     <ProjectReference Include="..\NewLife.EasyIO\NewLife.EasyIO.csproj" />
   </ItemGroup>
 

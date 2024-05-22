@@ -42,8 +42,14 @@ public class HomeController : ControllerBaseX
         var entris = _entryService.GetEntries(0, pid);
 
         // 目录优先，然后按照名称排序
-        entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
+        //entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
         //entris = entris.OrderByDescending(e => e.IsDirectory).ThenByDescending(e => e.LastWrite).ThenBy(e => e.Name).ToList();
+        entris = entris.OrderByDescending(e => e.IsDirectory)
+            .ThenByDescending(e => !e.Tag.IsNullOrEmpty())
+            .ThenBy(e => e.Tag + "")
+            .ThenByDescending(e => e.Version)
+            .ThenByDescending(e => e.LastWrite)
+            .ThenBy(e => e.Name).ToList();
 
         var model = new DirectoryModel
         {
