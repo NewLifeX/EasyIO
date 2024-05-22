@@ -61,6 +61,7 @@ public class FileSourceController : EntityController<FileSource>
     public ActionResult Scan()
     {
         var count = 0;
+        var sid = 0;
         foreach (var key in SelectKeys)
         {
             var source = FileSource.FindById(key.ToInt());
@@ -69,10 +70,14 @@ public class FileSourceController : EntityController<FileSource>
                 if (source.Kind.EqualIgnoreCase("dotNet"))
                 {
                     _ = Task.Run(() => _sourceService.ScanDotNet(source));
+                    if (source.StorageId > 0) sid = source.StorageId;
                     count++;
                 }
             }
         }
+
+        if (sid > 0)
+            _ = Task.Run(() => _sourceService.CreateLinks(sid));
 
         return JsonRefresh($"共处理[{count}]条", 1);
     }

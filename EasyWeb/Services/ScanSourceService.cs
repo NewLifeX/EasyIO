@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Cryptography;
 using EasyWeb.Data;
 using EasyWeb.Models;
 using NewLife;
@@ -57,6 +58,10 @@ public class ScanSourceService : IHostedService
                 item.Save();
             }
         }
+
+        // 创建链接文件
+        if (list.Count > 0)
+            CreateLinks(list[0].StorageId);
     }
 
     public async Task ScanDotNet(FileSource source)
@@ -132,6 +137,9 @@ public class ScanSourceService : IHostedService
                         fe.Enable = true;
                         fe.RawUrl = url;
                         fe.LastWrite = rel["release-date"].ToDateTime();
+
+                        _entryService.FixVersionAndTag(fe);
+
                         fe.Save();
 
                         Process(source, fe, rel["runtime"]);
@@ -228,5 +236,61 @@ public class ScanSourceService : IHostedService
         }
 
         //todo 增加一个定时任务，定时检查文件是否过期，如果已经过期（7天），则删除文件，更近一步是禁用（180天），紧接着删除（360天）
+    }
+
+    public void CreateLinks(Int32 storageId)
+    {
+        var root = FileEntry.FindAllByStorageIdAndPath(storageId, "dotNet").FirstOrDefault();
+        if (root == null) return;
+
+        var childs = FileEntry.FindAllByParentId(root.Id);
+
+        var kinds = new[] { "aspnetcore-runtime", "dotnet-runtime", "windowsdesktop-runtime" };
+        var rids = new[] {
+            "win-x86", "win-x64", "win-arm64",
+            "linux-x64", "linux-arm", "linux-arm64",
+            "linux-musl-x64", "linux-musl-arm", "linux-musl-arm64",
+            "osx-x64", "osx-arm64",
+        };
+
+        var last = FileEntry.FindAllByParentId(childs.OrderByDescending(e => e.Version).FirstOrDefault()?.Id ?? -1);
+        var tags = last.Where(e => !e.Tag.IsNullOrEmpty()).Select(e => e.Tag).Distinct().ToList();
+
+        // 遍历所有组合
+        foreach (var k in kinds)
+        {
+            foreach (var r in rids)
+            {
+                var tag = $"{k}-{r}";
+                if (tags.Contains(tag))
+                {
+                    var ext = "";
+                    if (r.StartsWith("win-"))
+                        ext = ".exe";
+                    else if (r.StartsWith("linux-"))
+                        ext = ".tar.gz";
+                    else if (r.StartsWith("osx-"))
+                        ext = ".pkg";
+
+                    var name = tag + ext;
+
+                    var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(name));
+                    fe ??= new FileEntry { Name = name };
+
+                    fe.StorageId = root.StorageId;
+                    fe.ParentId = root.Id;
+                    fe.Name = name;
+                    fe.Tag = tag;
+                    fe.Path = $"{root.Path}/{name}";
+                    fe.Enable = true;
+                    fe.IsDirectory = false;
+
+                    fe.LinkTarget = $"{root.Name}/!*-*/{k}-*-{r}{ext}";
+                    fe.LinkRedirect = true;
+
+                    fe.Save();
+                }
+            }
+        }
     }
 }

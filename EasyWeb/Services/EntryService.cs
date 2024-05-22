@@ -230,7 +230,7 @@ public class EntryService
     public void FixVersionAndTag(FileEntry entry)
     {
         var name = entry.Name;
-        if (name.IsNullOrEmpty() || !name.Contains("net") && !name.Contains("runtime")) return;
+        if (name.IsNullOrEmpty() || !Version.TryParse(name, out _) && !name.Contains("net") && !name.Contains("runtime")) return;
 
         name = name.TrimEnd(".tar.gz", ".zip", ".exe", ".pkg");
 
@@ -255,12 +255,16 @@ public class EntryService
     {
         // 	aspnetcore-runtime-composite-9.0.0-preview.4.24267.6-linux-musl-arm64.tar.gz
 
-        var p = name.LastIndexOf("-win-");
-        if (p < 0) p = name.LastIndexOf("-linux-");
-        if (p < 0) p = name.LastIndexOf("-osx-");
-        if (p < 0) return null;
+        if (name.Contains('-'))
+        {
+            var p = name.LastIndexOf("-win-");
+            if (p < 0) p = name.LastIndexOf("-linux-");
+            if (p < 0) p = name.LastIndexOf("-osx-");
+            if (p < 0) return null;
 
-        name = name[..p];
+            name = name[..p];
+        }
+
         var ss = name.Split('-');
 
         for (var i = ss.Length - 1; i >= 0; i--)
