@@ -82,11 +82,16 @@ public class EntryService
         {
             XTrace.WriteLine("校验文件哈希：{0} {1}", fi.FullName, entry.Hash);
 
-            using var fs = fi.OpenRead();
-            var hash = SHA512.Create().ComputeHash(fs).ToHex().ToLower();
-            fs.TryDispose();
+            var hash = "";
+            if (entry.Hash.Length <= 32)
+                hash = fi.MD5().ToHex();
+            else
+            {
+                using var fs = fi.OpenRead();
+                hash = SHA512.Create().ComputeHash(fs).ToHex();
+            }
 
-            if (hash != entry.Hash)
+            if (!hash.EqualIgnoreCase(entry.Hash))
             {
                 XTrace.WriteLine("文件哈希不一致 {0} {1}", hash, entry.Hash);
                 return false;
