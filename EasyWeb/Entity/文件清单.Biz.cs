@@ -1,28 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Script.Serialization;
-using System.Xml.Serialization;
-using NewLife;
+﻿using NewLife;
 using NewLife.Data;
-using NewLife.Log;
-using NewLife.Model;
-using NewLife.Reflection;
-using NewLife.Threading;
-using NewLife.Web;
 using XCode;
-using XCode.Cache;
-using XCode.Configuration;
-using XCode.DataAccessLayer;
-using XCode.Membership;
-using XCode.Shards;
 
 namespace EasyWeb.Data;
 
@@ -177,7 +155,7 @@ public partial class FileEntry : Entity<FileEntry>
 
         exp &= _.UpdateTime.Between(start, end);
 
-        if (!key.IsNullOrEmpty()) exp &= _.Name.Contains(key) | _.FullName.Contains(key) | _.Hash.Contains(key) | _.TraceId.Contains(key) | _.CreateIP.Contains(key) | _.UpdateIP.Contains(key);
+        if (!key.IsNullOrEmpty()) exp &= _.Name.StartsWith(key) | _.FullName.StartsWith(key) | _.Title.Contains(key) | _.Path.StartsWith(key) | _.RawUrl.Contains(key) | _.LinkTarget.Contains(key) | _.Remark.Contains(key);
 
         return FindAll(exp, page);
     }
