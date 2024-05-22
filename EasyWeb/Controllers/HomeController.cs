@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NewLife.Caching;
 using NewLife.Cube;
 using NewLife.Log;
+using NewLife.Web;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -41,15 +42,34 @@ public class HomeController : ControllerBaseX
 
         var entris = _entryService.GetEntries(0, pid);
 
+        var p = new Pager(WebHelper.Params);
+        entris = (p["sort"] + "") switch
+        {
+            "time" => entris.OrderByDescending(e => e.IsDirectory)
+                               .ThenByDescending(e => e.LastWrite)
+                               .ThenBy(e => e.Name).ToList(),
+            "size" => entris.OrderByDescending(e => e.IsDirectory)
+                               .ThenByDescending(e => e.Size)
+                               .ThenBy(e => e.Name).ToList(),
+            "name" => entris.OrderByDescending(e => e.IsDirectory)
+                               .ThenBy(e => e.Name).ToList(),
+            _ => entris.OrderByDescending(e => e.IsDirectory)
+                               .ThenByDescending(e => !e.Tag.IsNullOrEmpty())
+                               .ThenBy(e => e.Tag + "")
+                               .ThenByDescending(e => e.Version)
+                               .ThenByDescending(e => e.LastWrite)
+                               .ThenBy(e => e.Name).ToList(),
+        };
+
         // 目录优先，然后按照名称排序
         //entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
         //entris = entris.OrderByDescending(e => e.IsDirectory).ThenByDescending(e => e.LastWrite).ThenBy(e => e.Name).ToList();
-        entris = entris.OrderByDescending(e => e.IsDirectory)
-            .ThenByDescending(e => !e.Tag.IsNullOrEmpty())
-            .ThenBy(e => e.Tag + "")
-            .ThenByDescending(e => e.Version)
-            .ThenByDescending(e => e.LastWrite)
-            .ThenBy(e => e.Name).ToList();
+        //entris = entris.OrderByDescending(e => e.IsDirectory)
+        //    .ThenByDescending(e => !e.Tag.IsNullOrEmpty())
+        //    .ThenBy(e => e.Tag + "")
+        //    .ThenByDescending(e => e.Version)
+        //    .ThenByDescending(e => e.LastWrite)
+        //    .ThenBy(e => e.Name).ToList();
 
         var model = new DirectoryModel
         {
