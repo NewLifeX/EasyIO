@@ -193,6 +193,8 @@ public class ScanSourceService : IHostedService
             fe.Enable = true;
             fe.Remark = item.Rid;
 
+            if (fe.LastWrite.Year < 2000) fe.LastWrite = parent.LastWrite;
+
             if ((fe as IEntity).HasDirty)
                 fe.LastScan = DateTime.Now;
 

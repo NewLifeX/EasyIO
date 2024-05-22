@@ -40,7 +40,7 @@
                 <td>
                     <a href="@path" title="@item.Title">@item.Name</a>
                 </td>
-                <td style="max-width:600px;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;">@(item.IsDirectory ? "<dir>" : item.Hash)</td>
+                <td style="max-width:200px;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;">@(item.IsDirectory ? "<dir>" : item.Hash)</td>
             </tr>
         }
     </table>
