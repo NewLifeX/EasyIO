@@ -257,9 +257,9 @@ public class EntryService
 
         if (name.Contains('-'))
         {
-            var p = name.LastIndexOf("-win-");
-            if (p < 0) p = name.LastIndexOf("-linux-");
-            if (p < 0) p = name.LastIndexOf("-osx-");
+            var p = name.LastIndexOf("-win");
+            if (p < 0) p = name.LastIndexOf("-linux");
+            if (p < 0) p = name.LastIndexOf("-osx");
             if (p < 0) return null;
 
             name = name[..p];

@@ -245,16 +245,17 @@ public class ScanSourceService : IHostedService
 
         var childs = FileEntry.FindAllByParentId(root.Id);
 
-        var kinds = new[] { "aspnetcore-runtime", "dotnet-runtime", "windowsdesktop-runtime" };
+        var kinds = new[] { "aspnetcore-runtime", "dotnet-runtime", "windowsdesktop-runtime", "dotnet-hosting" };
         var rids = new[] {
-            "win-x86", "win-x64", "win-arm64",
+            "win-x86", "win-x64", "win-arm64", "win",
             "linux-x64", "linux-arm", "linux-arm64",
             "linux-musl-x64", "linux-musl-arm", "linux-musl-arm64",
             "osx-x64", "osx-arm64",
         };
 
-        var last = FileEntry.FindAllByParentId(childs.OrderByDescending(e => e.Version).FirstOrDefault()?.Id ?? -1);
-        var tags = last.Where(e => !e.Tag.IsNullOrEmpty()).Select(e => e.Tag).Distinct().ToList();
+        var last = childs.OrderByDescending(e => e.Version).FirstOrDefault();
+        var childs2 = FileEntry.FindAllByParentId(last?.Id ?? -1);
+        var tags = childs2.Where(e => !e.Tag.IsNullOrEmpty()).Select(e => e.Tag).Distinct().ToList();
 
         // 遍历所有组合
         foreach (var k in kinds)
@@ -265,7 +266,7 @@ public class ScanSourceService : IHostedService
                 if (tags.Contains(tag))
                 {
                     var ext = "";
-                    if (r.StartsWith("win-"))
+                    if (r.StartsWith("win"))
                         ext = ".exe";
                     else if (r.StartsWith("linux-"))
                         ext = ".tar.gz";
