@@ -73,15 +73,16 @@
         <Column Name="FullName" DataType="String" Length="250" Description="全路径。文件保存在本地的相对路径" />
         <Column Name="Path" DataType="String" Length="250" Description="路径。用于Url的相对路径" />
         <Column Name="Enable" DataType="Boolean" Description="启用" />
-        <Column Name="ParentId" DataType="Int32" Description="上级目录。0表示顶级" />
+        <Column Name="ParentId" DataType="Int32" Map="FileEntry@Id@$" Description="上级目录。0表示顶级" />
         <Column Name="IsDirectory" DataType="Boolean" Description="目录。当前清单是目录而不是文件" />
         <Column Name="Size" DataType="Int64" ItemType="GMK" Description="大小。文件大小" />
+        <Column Name="Version" DataType="Int32" Description="版本顺序。用于排序" />
         <Column Name="LastWrite" DataType="DateTime" Description="最后修改" />
         <Column Name="LastAccess" DataType="DateTime" Description="最后访问" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。最后一次扫描访问的时间" />
         <Column Name="Hash" DataType="String" Length="600" Description="哈希。MD5哈希或SHA512" />
         <Column Name="RawUrl" DataType="String" Length="500" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
-        <Column Name="LinkTarget" DataType="String" Description="链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件" />
+        <Column Name="LinkTarget" DataType="String" Length="250" Description="链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件" />
         <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
         <Column Name="LastDownload" DataType="DateTime" Description="最后下载" />
         <Column Name="TraceId" DataType="String" Length="200" Description="链路。链路追踪" />

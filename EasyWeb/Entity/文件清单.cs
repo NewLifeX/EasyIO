@@ -113,6 +113,14 @@ public partial class FileEntry
     [BindColumn("Size", "大小。文件大小", "", ItemType = "GMK")]
     public Int64 Size { get => _Size; set { if (OnPropertyChanging("Size", value)) { _Size = value; OnPropertyChanged("Size"); } } }
 
+    private Int32 _Version;
+    /// <summary>版本顺序。用于排序</summary>
+    [DisplayName("版本顺序")]
+    [Description("版本顺序。用于排序")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("Version", "版本顺序。用于排序", "")]
+    public Int32 Version { get => _Version; set { if (OnPropertyChanging("Version", value)) { _Version = value; OnPropertyChanged("Version"); } } }
+
     private DateTime _LastWrite;
     /// <summary>最后修改</summary>
     [DisplayName("最后修改")]
@@ -157,7 +165,7 @@ public partial class FileEntry
     /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
     [DisplayName("链接目标")]
     [Description("链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件")]
-    [DataObjectField(false, false, true, 50)]
+    [DataObjectField(false, false, true, 250)]
     [BindColumn("LinkTarget", "链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件", "")]
     public String LinkTarget { get => _LinkTarget; set { if (OnPropertyChanging("LinkTarget", value)) { _LinkTarget = value; OnPropertyChanged("LinkTarget"); } } }
 
@@ -268,6 +276,7 @@ public partial class FileEntry
             "ParentId" => _ParentId,
             "IsDirectory" => _IsDirectory,
             "Size" => _Size,
+            "Version" => _Version,
             "LastWrite" => _LastWrite,
             "LastAccess" => _LastAccess,
             "LastScan" => _LastScan,
@@ -301,6 +310,7 @@ public partial class FileEntry
                 case "ParentId": _ParentId = value.ToInt(); break;
                 case "IsDirectory": _IsDirectory = value.ToBoolean(); break;
                 case "Size": _Size = value.ToLong(); break;
+                case "Version": _Version = value.ToInt(); break;
                 case "LastWrite": _LastWrite = value.ToDateTime(); break;
                 case "LastAccess": _LastAccess = value.ToDateTime(); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
@@ -340,6 +350,14 @@ public partial class FileEntry
     [Map(nameof(SourceId), typeof(FileSource), "Id")]
     public String SourceName => Source?.Name;
 
+    /// <summary>上级目录</summary>
+    [XmlIgnore, IgnoreDataMember, ScriptIgnore]
+    public FileEntry Parent => Extends.Get(nameof(Parent), k => FileEntry.FindById(ParentId));
+
+    /// <summary>上级目录</summary>
+    [Map(nameof(ParentId), typeof(FileEntry), "Id")]
+    public String ParentName => Parent?.ToString();
+
     #endregion
 
     #region 字段名
@@ -378,6 +396,9 @@ public partial class FileEntry
 
         /// <summary>大小。文件大小</summary>
         public static readonly Field Size = FindByName("Size");
+
+        /// <summary>版本顺序。用于排序</summary>
+        public static readonly Field Version = FindByName("Version");
 
         /// <summary>最后修改</summary>
         public static readonly Field LastWrite = FindByName("LastWrite");
@@ -465,6 +486,9 @@ public partial class FileEntry
 
         /// <summary>大小。文件大小</summary>
         public const String Size = "Size";
+
+        /// <summary>版本顺序。用于排序</summary>
+        public const String Version = "Version";
 
         /// <summary>最后修改</summary>
         public const String LastWrite = "LastWrite";

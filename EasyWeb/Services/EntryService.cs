@@ -44,10 +44,10 @@ public class EntryService
     /// <param name="storageId"></param>
     /// <param name="path"></param>
     /// <returns></returns>
-    public FileEntry RetrieveFile(Int32 storageId, String path)
+    public (FileEntry, FileEntry link) RetrieveFile(Int32 storageId, String path)
     {
         var entry = GetEntry(storageId, path);
-        if (entry == null || !entry.Enable) return null;
+        if (entry == null || !entry.Enable) return (null, null);
 
         // 增加浏览数
         entry.Times++;
@@ -55,17 +55,24 @@ public class EntryService
         entry.SaveAsync(15_000);
 
         // 可能是链接文件，使用目标文件
+        FileEntry link = null;
         if (!entry.LinkTarget.IsNullOrEmpty())
         {
-            entry = GetLink(entry);
-            if (entry == null || !entry.Enable) return null;
+            link = GetLink(entry);
+            if (link == null || !link.Enable) return (null, null);
 
-            entry.Times++;
-            entry.LastDownload = DateTime.Now;
-            entry.SaveAsync(15_000);
+            // 更新连接文件信息到当前实体
+            if (entry.Title.IsNullOrEmpty()) entry.Title = link.Title;
+            if (entry.LastWrite < link.LastWrite) entry.LastWrite = link.LastWrite;
+            entry.Size = link.Size;
+            entry.Hash = link.Hash;
+
+            link.Times++;
+            link.LastDownload = DateTime.Now;
+            link.SaveAsync(15_000);
         }
 
-        return entry;
+        return (entry, link);
     }
 
     public Boolean CheckHash(FileEntry entry, FileInfo fi)
@@ -131,25 +138,63 @@ public class EntryService
         if (!link.Contains('*'))
             return GetEntry(entry.StorageId, link);
 
-        // 带有*的模糊匹配，先截断路径为目录和文件，*只能在文件名中
-        var p = link.LastIndexOf('/');
-        if (p < 0)
-            throw new ArgumentOutOfRangeException(nameof(entry.LinkTarget), "链接目标不合法 " + entry.LinkTarget);
+        // 逐层匹配，可能有多级目录带有*
+        var ss = link.Split('/');
+        if (ss.Length == 0) return null;
 
-        var dir = link[..p];
-        var file = link[(p + 1)..];
-        if (dir.Contains('*'))
-            throw new ArgumentOutOfRangeException(nameof(entry.LinkTarget), "链接目标不合法 " + entry.LinkTarget);
+        return MatchLink(entry.StorageId, 0, ss);
 
-        // 查找目录
-        var parent = GetEntry(entry.StorageId, dir);
-        if (parent == null) return null;
+        //// 带有*的模糊匹配，先截断路径为目录和文件，*只能在文件名中
+        //var p = link.LastIndexOf('/');
+        //if (p < 0)
+        //    throw new ArgumentOutOfRangeException(nameof(entry.LinkTarget), "链接目标不合法 " + entry.LinkTarget);
 
-        var childs = GetEntries(entry.StorageId, parent.Id);
-        childs = childs.Where(e => file.IsMatch(e.Name)).ToList();
-        if (childs.Count == 0) return null;
+        //var dir = link[..p];
+        //var file = link[(p + 1)..];
+        //if (dir.Contains('*'))
+        //    throw new ArgumentOutOfRangeException(nameof(entry.LinkTarget), "链接目标不合法 " + entry.LinkTarget);
 
-        // 返回最新的文件
-        return childs.OrderByDescending(e => e.LastWrite).FirstOrDefault();
+        //// 查找目录
+        //var parent = GetEntry(entry.StorageId, dir);
+        //if (parent == null) return null;
+
+        //var childs = GetEntries(entry.StorageId, parent.Id);
+        //childs = childs.Where(e => file.IsMatch(e.Name)).ToList();
+        //if (childs.Count == 0) return null;
+
+        //// 返回最新的文件
+        //return childs.OrderByDescending(e => e.LastWrite).FirstOrDefault();
+    }
+
+    private FileEntry MatchLink(Int32 storageId, Int32 parentId, String[] matchs)
+    {
+        var m = matchs[0];
+
+        var childs = GetEntries(storageId, parentId);
+
+        // 最后一级找文件
+        if (matchs.Length == 1)
+        {
+            childs = childs.Where(e => !e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            return childs.OrderByDescending(e => e.LastWrite).FirstOrDefault();
+        }
+        else
+        {
+            childs = childs.Where(e => e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            if (childs.Count == 0) return null;
+
+            // 递归查找子目录，找到最新的文件
+            FileEntry fe = null;
+            foreach (var item in childs)
+            {
+                var rs = MatchLink(storageId, item.Id, matchs[1..]);
+                if (rs != null && (fe == null || rs.LastWrite > fe.LastWrite))
+                {
+                    fe = rs;
+                }
+            }
+
+            return fe;
+        }
     }
 }

@@ -33,7 +33,9 @@
         </tr>
         @foreach (var item in Model.Entries)
         {
-            var path = item.Path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
+            var path = item.Path;
+            if (path.IsNullOrEmpty()) path = $"{item.Parent?.Path}/{item.Name}";
+            path = path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
             <tr>
                 <td>@item.LastWrite.ToFullString("")</td>
                 <td>@item.Size.ToGMK()</td>

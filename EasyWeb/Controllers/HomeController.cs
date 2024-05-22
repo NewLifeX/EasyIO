@@ -39,7 +39,7 @@ public class HomeController : ControllerBaseX
         var entris = _entryService.GetEntries(0, pid);
 
         // 目录优先，然后按照名称排序
-        entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
+        entris = entris.OrderByDescending(e => e.IsDirectory).ThenByDescending(e => e.Name).ToList();
 
         var model = new DirectoryModel
         {
@@ -64,34 +64,37 @@ public class HomeController : ControllerBaseX
 
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
-        var entry = _entryService.RetrieveFile(0, pathInfo);
+        var (entry, link) = _entryService.RetrieveFile(0, pathInfo);
         if (entry == null || !entry.Enable) return NotFound();
 
+        var fe = link ?? entry;
+
         // 组装本地路径
-        var path = entry.FullName;
-        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(entry.Path);
+        var path = fe.FullName;
+        if (fe.Storage != null) path = fe.Storage.HomeDirectory.CombinePath(fe.Path);
 
         path = path.GetFullPath();
 
         var fi = path.AsFile();
-        if (fi.Exists && _cacheProvider.InnerCache.Add($"hash:{entry.Id}", entry.Path, 600))
+        if (fi.Exists && _cacheProvider.InnerCache.Add($"hash:{fe.Id}", fe.Path, 600))
         {
             // 校验哈希信息
-            if (!_entryService.CheckHash(entry, fi))
+            if (!_entryService.CheckHash(fe, fi))
             {
                 fi.Delete();
 
-                _cacheProvider.InnerCache.Remove($"hash:{entry.Id}");
+                _cacheProvider.InnerCache.Remove($"hash:{fe.Id}");
             }
         }
 
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
-            if (!await _entryService.DownloadAsync(entry, path))
+            if (!await _entryService.DownloadAsync(fe, path))
                 return NotFound();
         }
 
+        // 文件下载使用原始访问的名字和时间
         var last = entry.LastWrite;
         if (last.Year < 2000) last = entry.UpdateTime;
 

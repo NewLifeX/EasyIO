@@ -56,22 +56,16 @@ public partial class FileEntry : Entity<FileEntry>
         // 建议先调用基类方法，基类方法会做一些统一处理
         if (!base.Valid(method)) return false;
 
-        // 在新插入数据或者修改了指定字段时进行修正
-        //if (method == DataMethod.Insert && !Dirtys[nameof(CreateTime)]) CreateTime = DateTime.Now;
-        //if (!Dirtys[nameof(UpdateTime)]) UpdateTime = DateTime.Now;
-        //if (method == DataMethod.Insert && !Dirtys[nameof(CreateIP)]) CreateIP = ManageProvider.UserHost;
-        //if (!Dirtys[nameof(UpdateIP)]) UpdateIP = ManageProvider.UserHost;
-
-        // 检查唯一索引
-        // CheckExist(method == DataMethod.Insert, nameof(StorageId), nameof(ParentId), nameof(Name));
+        if (Path.IsNullOrEmpty() && Parent != null)
+            Path = $"{Parent.Path}/{Name}";
 
         return true;
     }
     #endregion
 
     #region 扩展属性
-    [XmlIgnore, IgnoreDataMember]
-    public FileEntry Parent => Extends.Get(nameof(Parent), k => FindById(ParentId));
+    //[XmlIgnore, IgnoreDataMember]
+    //public FileEntry Parent => Extends.Get(nameof(Parent), k => FindById(ParentId));
     #endregion
 
     #region 扩展查询
