@@ -128,13 +128,13 @@ public class HomeController : ControllerBaseX
             try
             {
                 if (!await _entryService.DownloadAsync(fe, path))
-                    return NotFound("下载失败");
+                    return NotFound($"下载失败!id={fe.Id}/{fe.Name}");
             }
             catch (Exception ex)
             {
                 DefaultSpan.Current?.SetError(ex, fe.Path);
 
-                return NotFound("下载异常");
+                return NotFound($"下载异常!id={fe.Id}/{fe.Name}");
             }
         }
 
