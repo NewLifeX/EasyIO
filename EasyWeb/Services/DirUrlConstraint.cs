@@ -17,7 +17,7 @@ class DirUrlConstraint : IRouteConstraint
 
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
-        var entry = _entryService.GetFile(0, pathInfo);
+        var entry = _entryService.GetEntry(0, pathInfo);
         if (entry == null) return false;
 
         return entry.Enable && entry.IsDirectory;

@@ -141,7 +141,7 @@ public partial class FileEntry
     /// <summary>哈希。MD5哈希或SHA512</summary>
     [DisplayName("哈希")]
     [Description("哈希。MD5哈希或SHA512")]
-    [DataObjectField(false, false, true, 500)]
+    [DataObjectField(false, false, true, 600)]
     [BindColumn("Hash", "哈希。MD5哈希或SHA512", "")]
     public String Hash { get => _Hash; set { if (OnPropertyChanging("Hash", value)) { _Hash = value; OnPropertyChanged("Hash"); } } }
 
@@ -149,9 +149,17 @@ public partial class FileEntry
     /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
     [DisplayName("原始地址")]
     [Description("原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址")]
-    [DataObjectField(false, false, true, 200)]
+    [DataObjectField(false, false, true, 500)]
     [BindColumn("RawUrl", "原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址", "")]
     public String RawUrl { get => _RawUrl; set { if (OnPropertyChanging("RawUrl", value)) { _RawUrl = value; OnPropertyChanged("RawUrl"); } } }
+
+    private String _LinkTarget;
+    /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+    [DisplayName("链接目标")]
+    [Description("链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("LinkTarget", "链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件", "")]
+    public String LinkTarget { get => _LinkTarget; set { if (OnPropertyChanging("LinkTarget", value)) { _LinkTarget = value; OnPropertyChanged("LinkTarget"); } } }
 
     private Int32 _Times;
     /// <summary>次数。下载次数</summary>
@@ -265,6 +273,7 @@ public partial class FileEntry
             "LastScan" => _LastScan,
             "Hash" => _Hash,
             "RawUrl" => _RawUrl,
+            "LinkTarget" => _LinkTarget,
             "Times" => _Times,
             "LastDownload" => _LastDownload,
             "TraceId" => _TraceId,
@@ -297,6 +306,7 @@ public partial class FileEntry
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "Hash": _Hash = Convert.ToString(value); break;
                 case "RawUrl": _RawUrl = Convert.ToString(value); break;
+                case "LinkTarget": _LinkTarget = Convert.ToString(value); break;
                 case "Times": _Times = value.ToInt(); break;
                 case "LastDownload": _LastDownload = value.ToDateTime(); break;
                 case "TraceId": _TraceId = Convert.ToString(value); break;
@@ -384,6 +394,9 @@ public partial class FileEntry
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public static readonly Field RawUrl = FindByName("RawUrl");
 
+        /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+        public static readonly Field LinkTarget = FindByName("LinkTarget");
+
         /// <summary>次数。下载次数</summary>
         public static readonly Field Times = FindByName("Times");
 
@@ -467,6 +480,9 @@ public partial class FileEntry
 
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public const String RawUrl = "RawUrl";
+
+        /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+        public const String LinkTarget = "LinkTarget";
 
         /// <summary>次数。下载次数</summary>
         public const String Times = "Times";

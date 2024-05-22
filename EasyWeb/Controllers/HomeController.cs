@@ -1,14 +1,9 @@
-﻿using System.IO;
-using System.Security.Cryptography;
-using System.Web;
-using EasyWeb.Data;
+﻿using System.Web;
 using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using NewLife.Caching;
 using NewLife.Cube;
-using NewLife.Http;
-using NewLife.Log;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -27,10 +22,7 @@ public class HomeController : ControllerBaseX
 
     /// <summary>主页面</summary>
     /// <returns></returns>
-    public ActionResult Index()
-    {
-        return ShowDir(null);
-    }
+    public ActionResult Index() => ShowDir(null);
 
     /// <summary>显示目录</summary>
     /// <param name="pathInfo"></param>
@@ -41,10 +33,10 @@ public class HomeController : ControllerBaseX
             pathInfo = HttpUtility.UrlDecode(pathInfo);
 
         var pid = 0;
-        var parent = _entryService.GetFile(0, pathInfo);
+        var parent = _entryService.GetEntry(0, pathInfo);
         if (parent != null && parent.Enable) pid = parent.Id;
 
-        var entris = _entryService.GetFiles(0, pid);
+        var entris = _entryService.GetEntries(0, pid);
 
         // 目录优先，然后按照名称排序
         entris = entris.OrderByDescending(e => e.IsDirectory).ThenBy(e => e.Name).ToList();
@@ -72,13 +64,8 @@ public class HomeController : ControllerBaseX
 
         pathInfo = HttpUtility.UrlDecode(pathInfo);
 
-        var entry = _entryService.GetFile(0, pathInfo);
+        var entry = _entryService.RetrieveFile(0, pathInfo);
         if (entry == null || !entry.Enable) return NotFound();
-
-        // 增加浏览数
-        entry.Times++;
-        entry.LastDownload = DateTime.Now;
-        entry.SaveAsync(15_000);
 
         // 组装本地路径
         var path = entry.FullName;
@@ -86,69 +73,28 @@ public class HomeController : ControllerBaseX
 
         path = path.GetFullPath();
 
-        var last = entry.LastWrite;
-        if (last.Year < 2000) last = entry.UpdateTime;
-
         var fi = path.AsFile();
         if (fi.Exists && _cacheProvider.InnerCache.Add($"hash:{entry.Id}", entry.Path, 600))
         {
             // 校验哈希信息
-            if (!CheckHash(entry, fi))
+            if (!_entryService.CheckHash(entry, fi))
             {
                 fi.Delete();
+
+                _cacheProvider.InnerCache.Remove($"hash:{entry.Id}");
             }
         }
 
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
-            var url = entry.RawUrl;
-            if (url.IsNullOrEmpty()) return NotFound();
-
-            XTrace.WriteLine("文件不存在，准备下载 {0} => {1}", url, path);
-
-            var client = new HttpClient();
-            await client.DownloadFileAsync(url, path);
-
-            if (!System.IO.File.Exists(path)) return NotFound();
-
-            fi.Refresh();
-            XTrace.WriteLine("下载完成，大小：{0}", fi.Length.ToGMK());
-
-            // 校验哈希信息
-            if (!CheckHash(entry, fi))
-            {
-                fi.Delete();
+            if (!await _entryService.DownloadAsync(entry, path))
                 return NotFound();
-            }
-
-            entry.Size = fi.Length;
-            entry.LastWrite = DateTime.Now;
-            entry.LastAccess = DateTime.Now;
-            entry.Update();
         }
+
+        var last = entry.LastWrite;
+        if (last.Year < 2000) last = entry.UpdateTime;
 
         return PhysicalFile(path, "application/octet-stream", HttpUtility.HtmlEncode(entry.Name), last, null, true);
-    }
-
-    Boolean CheckHash(FileEntry entry, FileInfo fi)
-    {
-        // 校验哈希信息
-        if (!entry.Hash.IsNullOrEmpty())
-        {
-            XTrace.WriteLine("校验文件哈希：{0} {1}", fi.FullName, entry.Hash);
-
-            using var fs = fi.OpenRead();
-            var hash = SHA512.Create().ComputeHash(fs).ToHex().ToLower();
-            fs.TryDispose();
-
-            if (hash != entry.Hash)
-            {
-                XTrace.WriteLine("文件哈希不一致 {0} {1}", hash, entry.Hash);
-                return false;
-            }
-        }
-
-        return true;
     }
 }
