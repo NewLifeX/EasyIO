@@ -115,6 +115,7 @@ public class ScanSourceService : IHostedService
                     }
 
                     using var span2 = _tracer?.NewSpan("ScanDotNet-Release", ver);
+                    var url = rel["release-notes"] + "";
                     try
                     {
                         fe ??= new FileEntry { Name = ver };
@@ -124,8 +125,8 @@ public class ScanSourceService : IHostedService
                         fe.Path = $"{root.Path}/{ver}";
                         fe.IsDirectory = true;
                         fe.Enable = true;
+                        fe.RawUrl = url;
                         fe.LastWrite = rel["release-date"].ToDateTime();
-                        fe.Remark = rel["release-notes"] + "";
                         fe.Save();
 
                         Process(source, fe, rel["runtime"]);
@@ -213,7 +214,8 @@ public class ScanSourceService : IHostedService
             }
             else if (fe.UpdateTime.AddDays(30) < DateTime.Now)
             {
-                fe.Delete();
+                //todo 暂时不要删除
+                //fe.Delete();
             }
         }
 

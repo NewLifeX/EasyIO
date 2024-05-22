@@ -1,9 +1,11 @@
-﻿using System.Web;
+﻿using System.Diagnostics;
+using System.Web;
 using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
 using NewLife.Caching;
 using NewLife.Cube;
+using NewLife.Log;
 
 namespace NewLife.EasyWeb.Controllers;
 
@@ -12,11 +14,13 @@ public class HomeController : ControllerBaseX
 {
     private readonly EntryService _entryService;
     private readonly ICacheProvider _cacheProvider;
+    private readonly ITracer _tracer;
 
-    public HomeController(EntryService entryService, ICacheProvider cacheProvider)
+    public HomeController(EntryService entryService, ICacheProvider cacheProvider, ITracer tracer)
     {
         _entryService = entryService;
         _cacheProvider = cacheProvider;
+        _tracer = tracer;
         PageSetting.EnableNavbar = false;
     }
 
@@ -85,6 +89,7 @@ public class HomeController : ControllerBaseX
             // 校验哈希信息
             if (!_entryService.CheckHash(fe, fi))
             {
+                _tracer?.NewError("DeleteFile-HashError", $"{fe.Path} {fi.FullName} {fe.Hash}");
                 fi.Delete();
 
                 _cacheProvider.InnerCache.Remove($"hash:{fe.Id}");

@@ -67,6 +67,7 @@ public class ScanStorageService : IHostedService
         {
             // 根目录是否存在
             target = root;
+            span?.AppendTag($"target: {target.FullName}");
         }
         if (!target.Exists) return;
 
@@ -77,9 +78,6 @@ public class ScanStorageService : IHostedService
             storage.Update();
         }
 
-        var pattern = storage.Pattern;
-        if (pattern.IsNullOrEmpty()) pattern = "*";
-
         XTrace.WriteLine("扫描目录：{0}", target.FullName);
 
         var childs = FileEntry.Search(storage.Id, pid, null);
@@ -87,9 +85,12 @@ public class ScanStorageService : IHostedService
         var maxLength = 250;
         var totalSize = 0L;
         var rootPath = root.FullName.EnsureEnd(Runtime.Windows ? "\\" : "/");
+        span?.AppendTag($"rootPath: {rootPath}");
 
         // 扫描文件
-        foreach (var fi in target.GetFiles(pattern))
+        var fis = storage.Pattern.IsNullOrEmpty() ? target.GetFiles() : target.GetFiles(storage.Pattern);
+        span?.AppendTag($"Files: {fis.Length}");
+        foreach (var fi in fis)
         {
             // 跳过太长的文件
             if (fi.Name.Length > maxLength) continue;
@@ -142,7 +143,9 @@ public class ScanStorageService : IHostedService
         if (storage.Level <= 0 || level < storage.Level)
         {
             // 扫描目录
-            foreach (var di in target.GetDirectories(pattern))
+            var dis = storage.Pattern.IsNullOrEmpty() ? target.GetDirectories() : target.GetDirectories(storage.Pattern);
+            span?.AppendTag($"Directories: {dis.Length}");
+            foreach (var di in dis)
             {
                 var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(di.Name));
                 if (fe == null)
@@ -187,6 +190,14 @@ public class ScanStorageService : IHostedService
             if (!fe.RawUrl.IsNullOrEmpty()) continue;
             if (!fe.LinkTarget.IsNullOrEmpty()) continue;
 
+            // 判断文件目录是否存在
+            if (!fe.FullName.IsNullOrEmpty())
+            {
+                var path = fe.Storage?.HomeDirectory.CombinePath(fe.FullName);
+                if (!fe.IsDirectory && path.AsFile().Exists) continue;
+                if (fe.IsDirectory && path.AsDirectory().Exists) continue;
+            }
+
             if (fe.Enable)
             {
                 fe.Enable = false;
@@ -194,7 +205,8 @@ public class ScanStorageService : IHostedService
             }
             else if (fe.UpdateTime.AddDays(30) < DateTime.Now)
             {
-                fe.Delete();
+                //todo 暂时不要删除
+                //fe.Delete();
             }
         }
 

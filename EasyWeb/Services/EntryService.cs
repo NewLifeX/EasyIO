@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
 using System.Security.Cryptography;
 using EasyWeb.Data;
 using NewLife;
@@ -10,16 +10,22 @@ namespace EasyWeb.Services;
 
 public class EntryService
 {
+    private const Int32 CacheTime = 10;
     private readonly ICacheProvider _cacheProvider;
+    private readonly ITracer _tracer;
 
-    public EntryService(ICacheProvider cacheProvider) => _cacheProvider = cacheProvider;
+    public EntryService(ICacheProvider cacheProvider, ITracer tracer)
+    {
+        _cacheProvider = cacheProvider;
+        _tracer = tracer;
+    }
 
     /// <summary>获取默认存储</summary>
     /// <returns></returns>
     public FileStorage GetDefaultStorage()
     {
         return _cacheProvider.Cache.GetOrAdd($"DefaultStorage",
-            k => FileStorage.FindAllWithCache().FirstOrDefault(e => e.Enable), 60);
+            k => FileStorage.FindAllWithCache().FirstOrDefault(e => e.Enable), CacheTime);
     }
 
     public IList<FileEntry> GetEntries(Int32 storageId, Int32 parentId)
@@ -27,7 +33,7 @@ public class EntryService
         if (storageId == 0) storageId = GetDefaultStorage()?.Id ?? 0;
 
         return _cacheProvider.Cache.GetOrAdd($"Entries:{storageId}:{parentId}",
-            k => FileEntry.Search(storageId, parentId, true), 60);
+            k => FileEntry.Search(storageId, parentId, true), CacheTime);
     }
 
     public FileEntry GetEntry(Int32 storageId, String path)
@@ -37,7 +43,7 @@ public class EntryService
         if (storageId == 0) storageId = GetDefaultStorage()?.Id ?? 0;
 
         return _cacheProvider.Cache.GetOrAdd($"Entry:{storageId}:{path}",
-            k => FileEntry.FindByStorageIdAndPath(storageId, path), 60);
+            k => FileEntry.FindByStorageIdAndPath(storageId, path), CacheTime);
     }
 
     /// <summary>获取文件，增加访问量。可能指向真实文件</summary>
@@ -119,6 +125,7 @@ public class EntryService
         // 校验哈希信息
         if (!CheckHash(entry, fi))
         {
+            _tracer?.NewError("DeleteFile-HashError", $"{entry.Path} {fi.FullName} {entry.Hash}");
             fi.Delete();
             return false;
         }
