@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using EasyWeb.Data;
-using NewLife;
+﻿using EasyWeb.Data;
 using NewLife.Cube;
 using NewLife.Cube.Extensions;
-using NewLife.Cube.ViewModels;
-using NewLife.Log;
 using NewLife.Web;
 using XCode.Membership;
-using static EasyWeb.Data.FileEntry;
 
 namespace EasyWeb.Areas.Files.Controllers;
 
@@ -20,7 +15,8 @@ public class FileEntryController : EntityController<FileEntry>
     {
         //LogOnChange = true;
 
-        ListFields.RemoveField("SourceId", "Title", "FullName", "ParentId", "Hash", "RawUrl");
+        ListFields.RemoveField("SourceId", "SourceName", "Path", "Title", "FullName", "ParentId", "Hash", "RawUrl", "LastAccess");
+        ListFields.RemoveField("LinkTarget", "LinkRedirect", "LastDownload");
         ListFields.RemoveCreateField().RemoveRemarkField();
 
         //{
@@ -29,7 +25,7 @@ public class FileEntryController : EntityController<FileEntry>
         //    df.Target = "_blank";
         //}
         {
-            var df = ListFields.AddListField("files", "Enable");
+            var df = ListFields.AddListField("files", null, "ParentName");
             df.DisplayName = "查看文件";
             df.Url = "/Files/FileEntry?parentId={Id}";
             df.DataVisible = e => (e as FileEntry).IsDirectory;
@@ -53,13 +49,20 @@ public class FileEntryController : EntityController<FileEntry>
     /// <returns></returns>
     protected override IEnumerable<FileEntry> Search(Pager p)
     {
+        var id = p["id"].ToInt(-1);
+        if (id > 0)
+        {
+            var entity = FileEntry.FindById(id);
+            if (entity != null) return [entity];
+        }
+
         var storageId = p["storageId"].ToInt(-1);
         var parentId = p["parentId"].ToInt(-1);
-        //var enable = p["enable"]?.ToBoolean();
+        var enable = p["enable"]?.ToBoolean();
 
         var start = p["dtStart"].ToDateTime();
         var end = p["dtEnd"].ToDateTime();
 
-        return FileEntry.Search(storageId, null, parentId, start, end, p["Q"], p);
+        return FileEntry.Search(storageId, null, parentId, enable, start, end, p["Q"], p);
     }
 }

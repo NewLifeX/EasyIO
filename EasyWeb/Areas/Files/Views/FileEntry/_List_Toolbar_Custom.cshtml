@@ -1,0 +1,20 @@
+﻿@using NewLife.Common;
+@using NewLife.Cube
+@using XCode.Membership;
+@using XCode
+@{
+    var user = ViewBag.User as IUser ?? User.Identity as IUser;
+    var fact = ViewBag.Factory as IEntityFactory;
+    var set = ViewBag.PageSetting as PageSetting;
+    var page = ViewBag.Page as Pager;
+
+    var id = page["Id"].ToInt();
+    if (id <= 0) id = page["parentId"].ToInt();
+    var parent = FileEntry.FindById(id);
+}
+@if (parent != null)
+{
+    <button type="button" class="btn btn-purple btn-sm">
+        @parent.Path
+    </button>
+}

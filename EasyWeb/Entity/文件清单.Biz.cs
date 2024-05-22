@@ -166,14 +166,17 @@ public partial class FileEntry : Entity<FileEntry>
     /// <param name="key">关键字</param>
     /// <param name="page">分页参数信息。可携带统计和数据权限扩展查询等信息</param>
     /// <returns>实体列表</returns>
-    public static IList<FileEntry> Search(Int32 storageId, String name, Int32 parentId, DateTime start, DateTime end, String key, PageParameter page)
+    public static IList<FileEntry> Search(Int32 storageId, String name, Int32 parentId, Boolean? enable, DateTime start, DateTime end, String key, PageParameter page)
     {
         var exp = new WhereExpression();
 
         if (storageId >= 0) exp &= _.StorageId == storageId;
         if (!name.IsNullOrEmpty()) exp &= _.Name == name;
         if (parentId >= 0) exp &= _.ParentId == parentId;
+        if (enable != null) exp &= _.Enable == enable;
+
         exp &= _.UpdateTime.Between(start, end);
+
         if (!key.IsNullOrEmpty()) exp &= _.Name.Contains(key) | _.FullName.Contains(key) | _.Hash.Contains(key) | _.TraceId.Contains(key) | _.CreateIP.Contains(key) | _.UpdateIP.Contains(key);
 
         return FindAll(exp, page);

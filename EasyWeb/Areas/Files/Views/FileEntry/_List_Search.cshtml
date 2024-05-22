@@ -1,0 +1,14 @@
+﻿@using EasyWeb.Data
+@using NewLife;
+@using NewLife.Cube;
+@using NewLife.Web;
+@using XCode;
+@using XCode.Configuration;
+@using XCode.Membership;
+@{
+    var fact = ViewBag.Factory as IEntityFactory;
+    var page = ViewBag.Page as Pager;
+}
+
+@await Html.PartialAsync("_Enable")
+@await Html.PartialAsync("_DateRange")
