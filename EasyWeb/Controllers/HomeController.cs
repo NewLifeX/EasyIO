@@ -72,7 +72,7 @@ public class HomeController : ControllerBaseX
         if (entry == null || !entry.Enable) return NotFound("未找到文件清单");
 
         // 链接跳转到目标
-        if (link != null && link.LinkRedirect)
+        if (link != null && entry.LinkRedirect)
             return Redirect(link.Path.EnsureStart("/"));
 
         var fe = link ?? entry;
@@ -99,8 +99,17 @@ public class HomeController : ControllerBaseX
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
-            if (!await _entryService.DownloadAsync(fe, path))
-                return NotFound("下载失败");
+            try
+            {
+                if (!await _entryService.DownloadAsync(fe, path))
+                    return NotFound("下载失败");
+            }
+            catch (Exception ex)
+            {
+                DefaultSpan.Current?.SetError(ex, fe.Path);
+
+                return NotFound("下载异常");
+            }
         }
 
         // 文件下载使用原始访问的名字和时间

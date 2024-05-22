@@ -58,7 +58,7 @@ public class EntryService
         // 增加浏览数
         entry.Times++;
         entry.LastDownload = DateTime.Now;
-        entry.SaveAsync(15_000);
+        entry.SaveAsync(5_000);
 
         // 可能是链接文件，使用目标文件
         FileEntry link = null;
@@ -75,7 +75,7 @@ public class EntryService
 
             link.Times++;
             link.LastDownload = DateTime.Now;
-            link.SaveAsync(15_000);
+            link.SaveAsync(5_000);
         }
 
         return (entry, link);
@@ -117,7 +117,7 @@ public class EntryService
         var client = new HttpClient();
         await client.DownloadFileAsync(url, path);
 
-        if (!System.IO.File.Exists(path)) return false;
+        if (!File.Exists(path)) return false;
 
         var fi = path.AsFile();
         XTrace.WriteLine("下载完成，大小：{0}", fi.Length.ToGMK());
@@ -130,8 +130,11 @@ public class EntryService
             return false;
         }
 
+        // 缓存下载文件，不是简单更新最后写入时间
+        if (entry.LastWrite.Year < 2000)
+            entry.LastWrite = DateTime.Now;
+
         entry.Size = fi.Length;
-        entry.LastWrite = DateTime.Now;
         entry.LastAccess = DateTime.Now;
         entry.Update();
 
@@ -181,18 +184,31 @@ public class EntryService
     private FileEntry MatchLink(Int32 storageId, Int32 parentId, String[] matchs)
     {
         var m = matchs[0];
+        var flag = true;
+        if (m[0] == '!')
+        {
+            flag = false;
+            m = m[1..];
+        }
 
         var childs = GetEntries(storageId, parentId);
 
         // 最后一级找文件
         if (matchs.Length == 1)
         {
-            childs = childs.Where(e => !e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            if (flag)
+                childs = childs.Where(e => !e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            else
+                childs = childs.Where(e => !e.IsDirectory && !m.IsMatch(e.Name)).ToList();
+
             return childs.OrderByDescending(e => e.LastWrite).FirstOrDefault();
         }
         else
         {
-            childs = childs.Where(e => e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            if (flag)
+                childs = childs.Where(e => e.IsDirectory && m.IsMatch(e.Name)).ToList();
+            else
+                childs = childs.Where(e => e.IsDirectory && !m.IsMatch(e.Name)).ToList();
             if (childs.Count == 0) return null;
 
             // 递归查找子目录，找到最新的文件

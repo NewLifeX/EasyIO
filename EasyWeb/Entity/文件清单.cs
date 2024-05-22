@@ -162,11 +162,11 @@ public partial class FileEntry
     public String RawUrl { get => _RawUrl; set { if (OnPropertyChanging("RawUrl", value)) { _RawUrl = value; OnPropertyChanged("RawUrl"); } } }
 
     private String _LinkTarget;
-    /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+    /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
     [DisplayName("链接目标")]
-    [Description("链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件")]
+    [Description("链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件")]
     [DataObjectField(false, false, true, 250)]
-    [BindColumn("LinkTarget", "链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件", "")]
+    [BindColumn("LinkTarget", "链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件", "")]
     public String LinkTarget { get => _LinkTarget; set { if (OnPropertyChanging("LinkTarget", value)) { _LinkTarget = value; OnPropertyChanged("LinkTarget"); } } }
 
     private Boolean _LinkRedirect;
@@ -425,7 +425,7 @@ public partial class FileEntry
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public static readonly Field RawUrl = FindByName("RawUrl");
 
-        /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+        /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
         public static readonly Field LinkTarget = FindByName("LinkTarget");
 
         /// <summary>链接跳转。跳转到目标文件</summary>
@@ -518,7 +518,7 @@ public partial class FileEntry
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public const String RawUrl = "RawUrl";
 
-        /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
+        /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
         public const String LinkTarget = "LinkTarget";
 
         /// <summary>链接跳转。跳转到目标文件</summary>
