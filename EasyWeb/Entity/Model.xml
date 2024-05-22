@@ -83,6 +83,7 @@
         <Column Name="Hash" DataType="String" Length="600" Description="哈希。MD5哈希或SHA512" />
         <Column Name="RawUrl" DataType="String" Length="500" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
         <Column Name="LinkTarget" DataType="String" Length="250" Description="链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件" />
+        <Column Name="LinkRedirect" DataType="Boolean" Description="链接跳转。跳转到目标文件" />
         <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
         <Column Name="LastDownload" DataType="DateTime" Description="最后下载" />
         <Column Name="TraceId" DataType="String" Length="200" Description="链路。链路追踪" />

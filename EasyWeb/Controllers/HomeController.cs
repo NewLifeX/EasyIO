@@ -39,7 +39,7 @@ public class HomeController : ControllerBaseX
         var entris = _entryService.GetEntries(0, pid);
 
         // 目录优先，然后按照名称排序
-        entris = entris.OrderByDescending(e => e.IsDirectory).ThenByDescending(e => e.Name).ToList();
+        entris = entris.OrderByDescending(e => e.IsDirectory).ThenByDescending(e => e.LastWrite).ThenBy(e => e.Name).ToList();
 
         var model = new DirectoryModel
         {
@@ -66,6 +66,10 @@ public class HomeController : ControllerBaseX
 
         var (entry, link) = _entryService.RetrieveFile(0, pathInfo);
         if (entry == null || !entry.Enable) return NotFound();
+
+        // 链接跳转到目标
+        if (link != null && link.LinkRedirect)
+            return Redirect(link.Path.EnsureStart("/"));
 
         var fe = link ?? entry;
 

@@ -58,7 +58,7 @@ public class ScanStorageService : IHostedService
     {
         if (storage.Level > 0 && level > storage.Level) return;
 
-        using var span = _tracer?.NewSpan("ScanStorage", new { storage.Name, target.FullName, parent.Path, level });
+        using var span = _tracer?.NewSpan("ScanStorage", new { storage.Name, target?.FullName, parent?.Path, level });
 
         var root = storage.HomeDirectory.AsDirectory();
 
@@ -93,6 +93,8 @@ public class ScanStorageService : IHostedService
         {
             // 跳过太长的文件
             if (fi.Name.Length > maxLength) continue;
+
+            span?.AppendTag(fi.Name);
 
             try
             {
@@ -182,6 +184,9 @@ public class ScanStorageService : IHostedService
         // childs中有而root中没有的，需要标记禁用，长时间禁用的，需要标记已删除
         foreach (var fe in childs)
         {
+            if (!fe.RawUrl.IsNullOrEmpty()) continue;
+            if (!fe.LinkTarget.IsNullOrEmpty()) continue;
+
             if (fe.Enable)
             {
                 fe.Enable = false;

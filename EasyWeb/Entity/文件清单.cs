@@ -169,6 +169,14 @@ public partial class FileEntry
     [BindColumn("LinkTarget", "链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件", "")]
     public String LinkTarget { get => _LinkTarget; set { if (OnPropertyChanging("LinkTarget", value)) { _LinkTarget = value; OnPropertyChanged("LinkTarget"); } } }
 
+    private Boolean _LinkRedirect;
+    /// <summary>链接跳转。跳转到目标文件</summary>
+    [DisplayName("链接跳转")]
+    [Description("链接跳转。跳转到目标文件")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("LinkRedirect", "链接跳转。跳转到目标文件", "")]
+    public Boolean LinkRedirect { get => _LinkRedirect; set { if (OnPropertyChanging("LinkRedirect", value)) { _LinkRedirect = value; OnPropertyChanged("LinkRedirect"); } } }
+
     private Int32 _Times;
     /// <summary>次数。下载次数</summary>
     [DisplayName("次数")]
@@ -283,6 +291,7 @@ public partial class FileEntry
             "Hash" => _Hash,
             "RawUrl" => _RawUrl,
             "LinkTarget" => _LinkTarget,
+            "LinkRedirect" => _LinkRedirect,
             "Times" => _Times,
             "LastDownload" => _LastDownload,
             "TraceId" => _TraceId,
@@ -317,6 +326,7 @@ public partial class FileEntry
                 case "Hash": _Hash = Convert.ToString(value); break;
                 case "RawUrl": _RawUrl = Convert.ToString(value); break;
                 case "LinkTarget": _LinkTarget = Convert.ToString(value); break;
+                case "LinkRedirect": _LinkRedirect = value.ToBoolean(); break;
                 case "Times": _Times = value.ToInt(); break;
                 case "LastDownload": _LastDownload = value.ToDateTime(); break;
                 case "TraceId": _TraceId = Convert.ToString(value); break;
@@ -418,6 +428,9 @@ public partial class FileEntry
         /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
         public static readonly Field LinkTarget = FindByName("LinkTarget");
 
+        /// <summary>链接跳转。跳转到目标文件</summary>
+        public static readonly Field LinkRedirect = FindByName("LinkRedirect");
+
         /// <summary>次数。下载次数</summary>
         public static readonly Field Times = FindByName("Times");
 
@@ -507,6 +520,9 @@ public partial class FileEntry
 
         /// <summary>链接目标。链接到目标文件，支持*匹配目标目录的最新匹配文件</summary>
         public const String LinkTarget = "LinkTarget";
+
+        /// <summary>链接跳转。跳转到目标文件</summary>
+        public const String LinkRedirect = "LinkRedirect";
 
         /// <summary>次数。下载次数</summary>
         public const String Times = "Times";
