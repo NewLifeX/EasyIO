@@ -116,7 +116,7 @@ public class HomeController : ControllerBaseX
             if (!_entryService.CheckHash(fe, fi))
             {
                 _tracer?.NewError("DeleteFile-HashError", $"{fe.Path} {fi.FullName} {fe.Hash}");
-                fi.Delete();
+                //fi.Delete();
 
                 _cacheProvider.InnerCache.Remove($"hash:{fe.Id}");
             }
