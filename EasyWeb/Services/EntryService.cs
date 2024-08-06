@@ -113,6 +113,8 @@ public class EntryService
         var url = entry.RawUrl;
         if (url.IsNullOrEmpty()) return false;
 
+        using var span = _tracer?.NewSpan("DownloadFile", new { entry.Name, path, url });
+
         XTrace.WriteLine("文件不存在，准备下载 {0} => {1}", url, path);
 
         var client = new HttpClient();

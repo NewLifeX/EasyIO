@@ -50,6 +50,7 @@
         <Column Name="Level" DataType="Int32" Description="深度。最大搜索目录深度" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
+        <Column Name="RawRedirect" DataType="Boolean" Description="原始跳转。跳转到原始地址" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
