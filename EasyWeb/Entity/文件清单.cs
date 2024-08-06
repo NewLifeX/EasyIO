@@ -169,6 +169,14 @@ public partial class FileEntry
     [BindColumn("RawUrl", "原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址", "")]
     public String RawUrl { get => _RawUrl; set { if (OnPropertyChanging("RawUrl", value)) { _RawUrl = value; OnPropertyChanged("RawUrl"); } } }
 
+    private Boolean _RawRedirect;
+    /// <summary>原始跳转。跳转到原始地址</summary>
+    [DisplayName("原始跳转")]
+    [Description("原始跳转。跳转到原始地址")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("RawRedirect", "原始跳转。跳转到原始地址", "")]
+    public Boolean RawRedirect { get => _RawRedirect; set { if (OnPropertyChanging("RawRedirect", value)) { _RawRedirect = value; OnPropertyChanged("RawRedirect"); } } }
+
     private String _LinkTarget;
     /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
     [DisplayName("链接目标")]
@@ -299,6 +307,7 @@ public partial class FileEntry
             "LastScan" => _LastScan,
             "Hash" => _Hash,
             "RawUrl" => _RawUrl,
+            "RawRedirect" => _RawRedirect,
             "LinkTarget" => _LinkTarget,
             "LinkRedirect" => _LinkRedirect,
             "Times" => _Times,
@@ -335,6 +344,7 @@ public partial class FileEntry
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "Hash": _Hash = Convert.ToString(value); break;
                 case "RawUrl": _RawUrl = Convert.ToString(value); break;
+                case "RawRedirect": _RawRedirect = value.ToBoolean(); break;
                 case "LinkTarget": _LinkTarget = Convert.ToString(value); break;
                 case "LinkRedirect": _LinkRedirect = value.ToBoolean(); break;
                 case "Times": _Times = value.ToInt(); break;
@@ -438,6 +448,9 @@ public partial class FileEntry
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public static readonly Field RawUrl = FindByName("RawUrl");
 
+        /// <summary>原始跳转。跳转到原始地址</summary>
+        public static readonly Field RawRedirect = FindByName("RawRedirect");
+
         /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
         public static readonly Field LinkTarget = FindByName("LinkTarget");
 
@@ -533,6 +546,9 @@ public partial class FileEntry
 
         /// <summary>原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址</summary>
         public const String RawUrl = "RawUrl";
+
+        /// <summary>原始跳转。跳转到原始地址</summary>
+        public const String RawRedirect = "RawRedirect";
 
         /// <summary>链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件</summary>
         public const String LinkTarget = "LinkTarget";

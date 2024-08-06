@@ -125,6 +125,12 @@ public class HomeController : ControllerBaseX
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
+            // 直接跳转到原始地址
+            if (!entry.RawUrl.IsNullOrEmpty() && (entry.RawRedirect || entry.Parent != null && entry.Parent.RawRedirect))
+            {
+                return Redirect(entry.RawUrl);
+            }
+
             try
             {
                 if (!await _entryService.DownloadAsync(fe, path))
