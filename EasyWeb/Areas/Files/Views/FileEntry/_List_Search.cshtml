@@ -8,7 +8,16 @@
 @{
     var fact = ViewBag.Factory as IEntityFactory;
     var page = ViewBag.Page as Pager;
+
+    var dic = new Dictionary<Int32, String>();
+    dic[1] = "是";
+    dic[0] = "否";
 }
+
+<div class="form-group">
+    <label for="isDir" class="control-label">目录</label>
+    @Html.ForDropDownList("isDir", dic, page["isDir"], "全部", true)
+</div>
 
 @await Html.PartialAsync("_Enable")
 @await Html.PartialAsync("_DateRange")

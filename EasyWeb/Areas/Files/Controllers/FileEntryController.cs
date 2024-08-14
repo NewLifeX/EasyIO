@@ -58,11 +58,12 @@ public class FileEntryController : EntityController<FileEntry>
 
         var storageId = p["storageId"].ToInt(-1);
         var parentId = p["parentId"].ToInt(-1);
+        var isDir = p["isDir"]?.ToBoolean();
         var enable = p["enable"]?.ToBoolean();
 
         var start = p["dtStart"].ToDateTime();
         var end = p["dtEnd"].ToDateTime();
 
-        return FileEntry.Search(storageId, null, parentId, enable, start, end, p["Q"], p);
+        return FileEntry.Search(storageId, null, parentId, isDir, enable, start, end, p["Q"], p);
     }
 }
