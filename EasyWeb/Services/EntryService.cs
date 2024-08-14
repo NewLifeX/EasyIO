@@ -1,7 +1,6 @@
-﻿using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Xml.Linq;
+﻿using System.Security.Cryptography;
 using EasyWeb.Data;
+using EasyWeb.Models;
 using NewLife;
 using NewLife.Caching;
 using NewLife.Http;
@@ -275,5 +274,42 @@ public class EntryService
         }
 
         return null;
+    }
+
+    public FileInfo GetFile(FileEntry entry)
+    {
+        var path = entry.FullName;
+        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(entry.Path);
+
+        path = path.GetFullPath();
+
+        return path.AsFile();
+    }
+
+    /// <summary>清理无效条目（含子目录）的文件，含禁用和原始跳转</summary>
+    /// <param name="entry"></param>
+    /// <returns></returns>
+    public Int32 ClearFiles(FileEntry entry)
+    {
+        if (entry.IsDirectory)
+        {
+            var rs = 0;
+            var childs = FileEntry.FindAllByParentId(entry.Id);
+            foreach (var item in childs)
+            {
+                rs += ClearFiles(item);
+            }
+
+            return rs;
+        }
+        else if (!entry.Enable || entry.RedirectMode == RedirectModes.Redirect)
+        {
+            var fi = GetFile(entry);
+            if (fi.Exists) fi.Delete();
+
+            return 1;
+        }
+
+        return 0;
     }
 }
