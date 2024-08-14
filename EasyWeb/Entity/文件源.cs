@@ -78,6 +78,14 @@ public partial class FileSource
     [BindColumn("RootPath", "主目录。存放在目标仓库的指定路径", "")]
     public String RootPath { get => _RootPath; set { if (OnPropertyChanging("RootPath", value)) { _RootPath = value; OnPropertyChanged("RootPath"); } } }
 
+    private String _Protocol;
+    /// <summary>协议。http或https，留空表示用原来协议</summary>
+    [DisplayName("协议")]
+    [Description("协议。http或https，留空表示用原来协议")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("Protocol", "协议。http或https，留空表示用原来协议", "")]
+    public String Protocol { get => _Protocol; set { if (OnPropertyChanging("Protocol", value)) { _Protocol = value; OnPropertyChanged("Protocol"); } } }
+
     private Int32 _Period;
     /// <summary>同步周期。默认60秒</summary>
     [DisplayName("同步周期")]
@@ -189,6 +197,7 @@ public partial class FileSource
             "Enable" => _Enable,
             "StorageId" => _StorageId,
             "RootPath" => _RootPath,
+            "Protocol" => _Protocol,
             "Period" => _Period,
             "Whites" => _Whites,
             "Blacks" => _Blacks,
@@ -213,6 +222,7 @@ public partial class FileSource
                 case "Enable": _Enable = value.ToBoolean(); break;
                 case "StorageId": _StorageId = value.ToInt(); break;
                 case "RootPath": _RootPath = Convert.ToString(value); break;
+                case "Protocol": _Protocol = Convert.ToString(value); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Whites": _Whites = Convert.ToString(value); break;
                 case "Blacks": _Blacks = Convert.ToString(value); break;
@@ -268,6 +278,9 @@ public partial class FileSource
 
         /// <summary>主目录。存放在目标仓库的指定路径</summary>
         public static readonly Field RootPath = FindByName("RootPath");
+
+        /// <summary>协议。http或https，留空表示用原来协议</summary>
+        public static readonly Field Protocol = FindByName("Protocol");
 
         /// <summary>同步周期。默认60秒</summary>
         public static readonly Field Period = FindByName("Period");
@@ -328,6 +341,9 @@ public partial class FileSource
 
         /// <summary>主目录。存放在目标仓库的指定路径</summary>
         public const String RootPath = "RootPath";
+
+        /// <summary>协议。http或https，留空表示用原来协议</summary>
+        public const String Protocol = "Protocol";
 
         /// <summary>同步周期。默认60秒</summary>
         public const String Period = "Period";

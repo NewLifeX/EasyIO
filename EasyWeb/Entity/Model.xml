@@ -114,6 +114,7 @@
         <Column Name="Enable" DataType="Boolean" Description="启用" />
         <Column Name="StorageId" DataType="Int32" Map="FileStorage@Id" Description="仓库" />
         <Column Name="RootPath" DataType="String" Description="主目录。存放在目标仓库的指定路径" />
+        <Column Name="Protocol" DataType="String" Description="协议。http或https，留空表示用原来协议" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Whites" DataType="String" Description="白名单。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
         <Column Name="Blacks" DataType="String" Description="黑名单。仅搜索匹配以外的文件，支持*，多个规则逗号隔开" />

@@ -136,9 +136,20 @@ public class HomeController : ControllerBaseX
             if (auth_key.IsNullOrEmpty()) mode = RedirectModes.Redirect;
         }
 
-        if (!entry.RawUrl.IsNullOrEmpty() && mode != null && mode == RedirectModes.Redirect)
+        var url = entry.RawUrl;
+        if (!url.IsNullOrEmpty() && mode != null && mode == RedirectModes.Redirect)
         {
-            return Redirect(entry.RawUrl);
+            // 是否需要修改协议
+            if (entry.Source != null && !entry.Source.Protocol.IsNullOrEmpty())
+            {
+                var p = url.IndexOf("://");
+                if (p > 0)
+                {
+                    url = entry.Source.Protocol + url[p..];
+                }
+            }
+
+            return Redirect(url);
         }
 
         // 如果文件不存在，则临时下载，或者返回404
