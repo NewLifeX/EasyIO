@@ -358,7 +358,7 @@ public class EntryService
         // 避免第一个文件都无法下载
         if (size - entry.Size > maxSize)
         {
-            _tracer?.NewError("DownloadFile-FlowLimit", new { entry.Path, entry.Size, TotalSize = size });
+            _tracer?.NewError("access:FlowLimit", new { entry.Path, entry.Size, TotalSize = size });
 
             return false;
         }

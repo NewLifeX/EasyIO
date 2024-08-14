@@ -132,13 +132,13 @@ public class ScanSourceService : IHostedService
                     var url = rel["release-notes"] + "";
                     try
                     {
-                        fe ??= new FileEntry { Name = ver };
+                        fe ??= new FileEntry { Name = ver, Enable = true };
                         fe.SourceId = root.SourceId;
                         fe.StorageId = root.StorageId;
                         fe.ParentId = root.Id;
                         fe.Path = $"{root.Path}/{ver}";
                         fe.IsDirectory = true;
-                        fe.Enable = true;
+                        //fe.Enable = true;
                         fe.RawUrl = url;
                         fe.LastWrite = rel["release-date"].ToDateTime();
 
@@ -198,7 +198,7 @@ public class ScanSourceService : IHostedService
             if (fe != null)
                 childs.Remove(fe);
             else
-                fe = new FileEntry { Name = name };
+                fe = new FileEntry { Name = name, Enable = true };
 
             fe.SourceId = parent.SourceId;
             fe.StorageId = parent.StorageId;
@@ -208,7 +208,7 @@ public class ScanSourceService : IHostedService
             fe.Path = $"{parent.Path}/{name}";
             fe.RawUrl = item.Url;
             fe.Hash = item.Hash;
-            fe.Enable = true;
+            //fe.Enable = true;
             fe.Remark = item.Rid;
 
             // 解析版本号
@@ -280,14 +280,14 @@ public class ScanSourceService : IHostedService
                     var name = tag + ext;
 
                     var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(name));
-                    fe ??= new FileEntry { Name = name };
+                    fe ??= new FileEntry { Name = name, Enable = true };
 
                     fe.StorageId = root.StorageId;
                     fe.ParentId = root.Id;
                     fe.Name = name;
                     fe.Tag = tag;
                     fe.Path = $"{root.Path}/{name}";
-                    fe.Enable = true;
+                    //fe.Enable = true;
                     fe.IsDirectory = false;
 
                     fe.LinkTarget = $"{root.Name}/!*-*/{k}-*-{r}{ext}";
