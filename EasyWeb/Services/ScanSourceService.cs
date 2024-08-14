@@ -79,15 +79,19 @@ public class ScanSourceService : IHostedService
         {
             root = new FileEntry
             {
-                SourceId = source.Id,
-                StorageId = sid,
+                //SourceId = source.Id,
+                //StorageId = sid,
                 Name = "dotNet",
                 Path = "dotNet",
                 Enable = true,
                 IsDirectory = true,
             };
-            root.Insert();
+            //root.Insert();
         }
+
+        root.StorageId = sid;
+        root.SourceId = source.Id;
+        root.Save();
 
         try
         {
@@ -129,7 +133,7 @@ public class ScanSourceService : IHostedService
                     try
                     {
                         fe ??= new FileEntry { Name = ver };
-                        fe.SourceId = root.Id;
+                        fe.SourceId = root.SourceId;
                         fe.StorageId = root.StorageId;
                         fe.ParentId = root.Id;
                         fe.Path = $"{root.Path}/{ver}";
@@ -196,7 +200,7 @@ public class ScanSourceService : IHostedService
             else
                 fe = new FileEntry { Name = name };
 
-            fe.SourceId = parent.Id;
+            fe.SourceId = parent.SourceId;
             fe.StorageId = parent.StorageId;
             fe.ParentId = parent.Id;
 
