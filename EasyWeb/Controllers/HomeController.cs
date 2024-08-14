@@ -97,6 +97,8 @@ public class HomeController : ControllerBaseX
         var (entry, link) = _entryService.RetrieveFile(0, pathInfo);
         if (entry == null || !entry.Enable) return NotFound("未找到文件清单");
 
+        using var span = _tracer?.NewSpan(nameof(DownloadFile), new { entry.Name, entry.Path, entry.FullName });
+
         // 链接跳转到目标
         if (link != null && entry.LinkRedirect)
             return Redirect(link.Path.EnsureStart("/"));
@@ -122,18 +124,25 @@ public class HomeController : ControllerBaseX
             }
         }
 
+        // 直接跳转到原始地址
+        var mode = entry?.RedirectMode;
+        if (mode == null || mode == RedirectModes.None) mode = entry.Parent?.RedirectMode;
+        if (mode == null || mode == RedirectModes.None) mode = entry.Storage?.RedirectMode;
+        if (mode == RedirectModes.Smart)
+        {
+            // 智能跳转。验证通过的不需要跳转
+            var auth_key = Request.Query["auth_key"] + "";
+            if (auth_key.IsNullOrEmpty()) mode = RedirectModes.Redirect;
+        }
+
+        if (!entry.RawUrl.IsNullOrEmpty() && mode != null && mode == RedirectModes.Redirect)
+        {
+            return Redirect(entry.RawUrl);
+        }
+
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
-            // 直接跳转到原始地址
-            var mode = entry?.RedirectMode;
-            if (mode == null || mode == RedirectModes.None) mode = entry.Parent?.RedirectMode;
-            if (mode == null || mode == RedirectModes.None) mode = entry.Storage?.RedirectMode;
-            if (!entry.RawUrl.IsNullOrEmpty() && mode != null && mode == RedirectModes.Redirect)
-            {
-                return Redirect(entry.RawUrl);
-            }
-
             try
             {
                 if (!await _entryService.DownloadAsync(fe, path))
