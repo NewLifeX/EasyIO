@@ -231,7 +231,7 @@ public class EntryService
     public void FixVersionAndTag(FileEntry entry)
     {
         var name = entry.Name;
-        if (name.IsNullOrEmpty() || !Version.TryParse(name, out _) && !name.Contains("net") && !name.Contains("runtime")) return;
+        if (name.IsNullOrEmpty() || !Version.TryParse(name, out _) && !name.Contains("net") && !name.Contains("runtime") && !name.Contains("-preview")) return;
 
         name = name.TrimEnd(".tar.gz", ".zip", ".exe", ".pkg");
 
@@ -254,14 +254,21 @@ public class EntryService
 
     String GetVersion(String name)
     {
-        // 	aspnetcore-runtime-composite-9.0.0-preview.4.24267.6-linux-musl-arm64.tar.gz
+        // aspnetcore-runtime-composite-9.0.0-preview.4.24267.6-linux-musl-arm64.tar.gz
 
         if (name.Contains('-'))
         {
             var p = name.LastIndexOf("-win");
             if (p < 0) p = name.LastIndexOf("-linux");
             if (p < 0) p = name.LastIndexOf("-osx");
-            if (p < 0) return null;
+            if (p < 0)
+            {
+                // 9.0.0-preview.5
+                p = name.LastIndexOf("-preview");
+                if (p > 0) return name.Replace("-preview", null);
+
+                return null;
+            }
 
             name = name[..p];
         }
@@ -305,9 +312,14 @@ public class EntryService
         else if (!entry.Enable || entry.RedirectMode == RedirectModes.Redirect)
         {
             var fi = GetFile(entry);
-            if (fi.Exists) fi.Delete();
+            if (fi.Exists)
+            {
+                using var span = _tracer?.NewSpan("DeleteFile", new { entry.Name, entry.Path, entry.FullName, entry.Enable, entry.RedirectMode });
 
-            return 1;
+                fi.Delete();
+
+                return 1;
+            }
         }
 
         return 0;
