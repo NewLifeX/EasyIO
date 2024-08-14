@@ -2,7 +2,7 @@
 
 namespace EasyWeb.Models;
 
-public enum RawRedirects
+public enum RedirectModes
 {
     /// <summary>默认</summary>
     [Description("默认")]

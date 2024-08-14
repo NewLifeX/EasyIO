@@ -126,10 +126,10 @@ public class HomeController : ControllerBaseX
         if (!System.IO.File.Exists(path))
         {
             // 直接跳转到原始地址
-            var mode = entry?.RawRedirect;
-            if (mode == null || mode == RawRedirects.None) mode = entry.Parent?.RawRedirect;
-            if (mode == null || mode == RawRedirects.None) mode = entry.Storage?.RawRedirect;
-            if (!entry.RawUrl.IsNullOrEmpty() && mode != null && mode == RawRedirects.Redirect)
+            var mode = entry?.RedirectMode;
+            if (mode == null || mode == RedirectModes.None) mode = entry.Parent?.RedirectMode;
+            if (mode == null || mode == RedirectModes.None) mode = entry.Storage?.RedirectMode;
+            if (!entry.RawUrl.IsNullOrEmpty() && mode != null && mode == RedirectModes.Redirect)
             {
                 return Redirect(entry.RawUrl);
             }

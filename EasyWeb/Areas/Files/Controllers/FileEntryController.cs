@@ -73,7 +73,7 @@ public class FileEntryController : EntityController<FileEntry>
     }
 
     [EntityAuthorize(PermissionFlags.Update)]
-    public ActionResult SetRawRedirect(RawRedirects redirectMode)
+    public ActionResult SetRawRedirect(RedirectModes redirectMode)
     {
         if (GetRequest("keys") == null) throw new ArgumentNullException(nameof(SelectKeys));
 
@@ -83,7 +83,7 @@ public class FileEntryController : EntityController<FileEntry>
             var entry = FileEntry.FindById(item.ToInt());
             if (entry != null)
             {
-                entry.RawRedirect = redirectMode;
+                entry.RedirectMode = redirectMode;
                 rs += entry.Update();
             }
         }
