@@ -140,6 +140,13 @@ public class EntryService
         entry.LastAccess = DateTime.Now;
         entry.Update();
 
+        var parent = entry.Parent;
+        if (parent != null)
+        {
+            parent.Size = FileEntry.FindAllByParentId(parent.Id).Sum(e => e.Size);
+            parent.Update();
+        }
+
         return true;
     }
 
@@ -295,21 +302,25 @@ public class EntryService
 
     /// <summary>清理无效条目（含子目录）的文件，含禁用和原始跳转</summary>
     /// <param name="entry"></param>
+    /// <param name="force">是否强迫删除，主要用于子目录递归</param>
     /// <returns></returns>
-    public Int32 ClearFiles(FileEntry entry)
+    public Int32 ClearFiles(FileEntry entry, Boolean force)
     {
+        var rs = 0;
         if (entry.IsDirectory)
         {
-            var rs = 0;
+            force |= !entry.Enable || entry.RedirectMode == RedirectModes.Redirect;
+
             var childs = FileEntry.FindAllByParentId(entry.Id);
             foreach (var item in childs)
             {
-                rs += ClearFiles(item);
+                rs += ClearFiles(item, force);
             }
 
-            return rs;
+            entry.Size = childs.Sum(e => e.Size);
+            entry.Update();
         }
-        else if (!entry.Enable || entry.RedirectMode == RedirectModes.Redirect)
+        else if (force || !entry.Enable || entry.RedirectMode == RedirectModes.Redirect)
         {
             var fi = GetFile(entry);
             if (fi.Exists)
@@ -318,10 +329,13 @@ public class EntryService
 
                 fi.Delete();
 
-                return 1;
+                rs++;
             }
+
+            entry.Size = 0;
+            entry.Update();
         }
 
-        return 0;
+        return rs;
     }
 }

@@ -104,7 +104,7 @@ public class FileEntryController : EntityController<FileEntry>
             var entry = FileEntry.FindById(item.ToInt());
             if (entry != null)
             {
-                rs += _entryService.ClearFiles(entry);
+                rs += _entryService.ClearFiles(entry, false);
             }
         }
 
