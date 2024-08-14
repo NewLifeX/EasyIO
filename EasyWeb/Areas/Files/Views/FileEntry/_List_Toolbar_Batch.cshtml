@@ -1,0 +1,17 @@
+﻿@using EasyWeb.Models
+@using NewLife.Common;
+@using NewLife.Cube
+@{
+    var set = ViewBag.PageSetting as PageSetting ?? PageSetting.Global;
+    var page = ViewBag.Page as Pager;
+}
+@if (set.EnableSelect && this.Has(PermissionFlags.Update))
+{
+    <div class="form-group">
+        <label for="redirectMode" class="control-label">跳转模式：</label>
+        @Html.ForDropDownList("redirectMode", EnumHelper.GetDescriptions(typeof(RawRedirects)), page["redirectMode"], "全部", true)
+    </div>
+    <button type="button" class="btn btn-purple btn-sm" data-action="action" data-url="@Url.Action("SetRawRedirect")" data-fields="keys,redirectMode" disabled>
+        设置原始跳
+    </button>
+}

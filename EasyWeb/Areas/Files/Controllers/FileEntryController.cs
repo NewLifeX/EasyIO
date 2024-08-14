@@ -1,7 +1,12 @@
-﻿using EasyWeb.Data;
+﻿using System.ComponentModel;
+using EasyWeb.Data;
+using EasyWeb.Models;
+using Microsoft.AspNetCore.Mvc;
+using NewLife;
 using NewLife.Cube;
 using NewLife.Cube.Extensions;
 using NewLife.Web;
+using Stardust;
 using XCode.Membership;
 
 namespace EasyWeb.Areas.Files.Controllers;
@@ -65,5 +70,24 @@ public class FileEntryController : EntityController<FileEntry>
         var end = p["dtEnd"].ToDateTime();
 
         return FileEntry.Search(storageId, null, parentId, isDir, enable, start, end, p["Q"], p);
+    }
+
+    [EntityAuthorize(PermissionFlags.Update)]
+    public ActionResult SetRawRedirect(RawRedirects redirectMode)
+    {
+        if (GetRequest("keys") == null) throw new ArgumentNullException(nameof(SelectKeys));
+
+        var rs = 0;
+        foreach (var item in SelectKeys)
+        {
+            var entry = FileEntry.FindById(item.ToInt());
+            if (entry != null)
+            {
+                entry.RawRedirect = redirectMode;
+                rs += entry.Update();
+            }
+        }
+
+        return JsonRefresh($"操作成功{rs}个");
     }
 }

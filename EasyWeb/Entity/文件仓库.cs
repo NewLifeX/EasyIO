@@ -94,13 +94,13 @@ public partial class FileStorage
     [BindColumn("Pattern", "匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开", "")]
     public String Pattern { get => _Pattern; set { if (OnPropertyChanging("Pattern", value)) { _Pattern = value; OnPropertyChanged("Pattern"); } } }
 
-    private Boolean _RawRedirect;
+    private EasyWeb.Models.RawRedirects _RawRedirect;
     /// <summary>原始跳转。跳转到原始地址</summary>
     [DisplayName("原始跳转")]
     [Description("原始跳转。跳转到原始地址")]
     [DataObjectField(false, false, false, 0)]
     [BindColumn("RawRedirect", "原始跳转。跳转到原始地址", "")]
-    public Boolean RawRedirect { get => _RawRedirect; set { if (OnPropertyChanging("RawRedirect", value)) { _RawRedirect = value; OnPropertyChanged("RawRedirect"); } } }
+    public EasyWeb.Models.RawRedirects RawRedirect { get => _RawRedirect; set { if (OnPropertyChanging("RawRedirect", value)) { _RawRedirect = value; OnPropertyChanged("RawRedirect"); } } }
 
     private DateTime _LastScan;
     /// <summary>最后扫描。记录最后一次扫描时间</summary>
@@ -215,7 +215,7 @@ public partial class FileStorage
                 case "Level": _Level = value.ToInt(); break;
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
-                case "RawRedirect": _RawRedirect = value.ToBoolean(); break;
+                case "RawRedirect": _RawRedirect = (EasyWeb.Models.RawRedirects)value.ToInt(); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
@@ -231,6 +231,9 @@ public partial class FileStorage
     #endregion
 
     #region 关联映射
+    #endregion
+
+    #region 扩展查询
     #endregion
 
     #region 字段名

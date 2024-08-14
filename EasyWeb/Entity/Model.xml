@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<EntityModel xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="https://newlifex.com https://newlifex.com/Model202309.xsd" Document="https://newlifex.com/xcode/model" xmlns="https://newlifex.com/Model202309.xsd">
+<EntityModel xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="https://newlifex.com https://newlifex.com/Model202407.xsd" Document="https://newlifex.com/xcode/model" xmlns="https://newlifex.com/Model202407.xsd">
   <Option>
     <!--类名模板。其中{name}替换为Table.Name，如{name}Model/I{name}Dto等-->
     <ClassNameTemplate />
@@ -50,7 +50,7 @@
         <Column Name="Level" DataType="Int32" Description="深度。最大搜索目录深度" />
         <Column Name="Period" DataType="Int32" Description="同步周期。默认60秒" />
         <Column Name="Pattern" DataType="String" Description="匹配规则。仅搜索匹配的文件，支持*，多个规则逗号隔开" />
-        <Column Name="RawRedirect" DataType="Boolean" Description="原始跳转。跳转到原始地址" />
+        <Column Name="RawRedirect" DataType="Int32" Description="原始跳转。跳转到原始地址" Type="EasyWeb.Models.RawRedirects" />
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。记录最后一次扫描时间" />
         <Column Name="CreateUserId" DataType="Int32" Description="创建者" Category="扩展" />
         <Column Name="CreateTime" DataType="DateTime" Description="创建时间" Category="扩展" />
@@ -84,7 +84,7 @@
         <Column Name="LastScan" DataType="DateTime" Description="最后扫描。最后一次扫描访问的时间" />
         <Column Name="Hash" DataType="String" Length="600" Description="哈希。MD5哈希或SHA512" />
         <Column Name="RawUrl" DataType="String" Length="500" Description="原始地址。文件的原始地址，如果文件在本地不存在时，跳转原始地址" />
-        <Column Name="RawRedirect" DataType="Boolean" Description="原始跳转。跳转到原始地址" />
+        <Column Name="RawRedirect" DataType="Int32" Description="原始跳转。跳转到原始地址" Type="EasyWeb.Models.RawRedirects" />
         <Column Name="LinkTarget" DataType="String" Length="250" Description="链接目标。链接到目标文件，支持*和!*匹配目标目录的最新匹配文件" />
         <Column Name="LinkRedirect" DataType="Boolean" Description="链接跳转。跳转到目标文件" />
         <Column Name="Times" DataType="Int32" Description="次数。下载次数" />
