@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Data;
+using System.Security.Cryptography;
 using EasyWeb.Data;
 using EasyWeb.Models;
 using NewLife;
@@ -337,5 +338,31 @@ public class EntryService
         }
 
         return rs;
+    }
+
+    public Boolean ValidLimit(FileEntry entry, String ip, Int32 limitCycle = 600, Int64 maxSize = 100 * 1024 * 1024)
+    {
+        // 时间因子，今天总秒数除以周期
+        var now = DateTime.Now;
+        var sec = (Int32)(now - now.Date).TotalSeconds;
+        var time = sec / limitCycle;
+
+        // 根据流量大小做限制
+        var key = $"flow:{ip}:{time}";
+        var size = _cacheProvider.Cache.Increment(key, entry.Size);
+        if (size <= entry.Size)
+            _cacheProvider.Cache.SetExpire(key, TimeSpan.FromSeconds(limitCycle));
+
+        DefaultSpan.Current?.AppendTag($"ValidLimit: time={TimeSpan.FromSeconds(time * limitCycle)} size={size}");
+
+        // 避免第一个文件都无法下载
+        if (size - entry.Size > maxSize)
+        {
+            _tracer?.NewError("DownloadFile-FlowLimit", new { entry.Path, entry.Size, TotalSize = size });
+
+            return false;
+        }
+
+        return true;
     }
 }

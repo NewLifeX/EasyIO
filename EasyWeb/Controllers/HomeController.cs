@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Net;
+using System.Web;
 using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -154,6 +155,12 @@ public class HomeController : ControllerBaseX
 
                 return NotFound($"下载异常!id={fe.Id}/{fe.Name}");
             }
+        }
+
+        // 根据流量大小做限制
+        if (!_entryService.ValidLimit(entry, UserHost, 600, 100 * 1024 * 1024))
+        {
+            return Problem("流量超限", null, (Int32?)HttpStatusCode.TooManyRequests, "Title", "Type");
         }
 
         // 文件下载使用原始访问的名字和时间
