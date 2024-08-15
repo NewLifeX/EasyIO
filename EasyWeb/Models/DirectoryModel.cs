@@ -1,10 +1,8 @@
-﻿using EasyWeb.Data;
-
-namespace EasyWeb.Models;
+﻿namespace EasyWeb.Models;
 
 public class DirectoryModel
 {
-    public FileEntry Parent { get; set; }
+    public IList<FileModel> Parents { get; set; }
 
-    public IList<FileEntry> Entries { get; set; }
+    public IList<FileModel> Entries { get; set; }
 }

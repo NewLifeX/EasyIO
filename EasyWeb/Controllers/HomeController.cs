@@ -72,11 +72,19 @@ public class HomeController : ControllerBaseX
         //    .ThenByDescending(e => e.LastWrite)
         //    .ThenBy(e => e.Name).ToList();
 
-        var model = new DirectoryModel
+        var model = new DirectoryModel();
+
+        var ps = new List<FileModel>();
+        var pt = parent;
+        while (pt != null)
         {
-            Parent = parent,
-            Entries = entris,
-        };
+            ps.Add(_entryService.BuildModel(pt));
+            pt = pt.Parent;
+        }
+        ps.Add(new FileModel { Path = "" });
+        model.Parents = ps;
+
+        model.Entries = entris.Select(e => _entryService.BuildModel(e)).ToList();
 
         if (parent != null)
             ViewBag.Title = parent.Path;

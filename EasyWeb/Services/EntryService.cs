@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Security.Cryptography;
+using System.Web;
 using EasyWeb.Data;
 using EasyWeb.Models;
 using NewLife;
@@ -45,6 +46,29 @@ public class EntryService
 
         return _cacheProvider.Cache.GetOrAdd($"Entry:{storageId}:{path}",
             k => FileEntry.FindByStorageIdAndPath(storageId, path), CacheTime);
+    }
+
+    public FileModel BuildModel(FileEntry entry)
+    {
+        if (entry == null) return null;
+
+        // 构建下载Url
+        var url = entry.Path;
+        if (url.IsNullOrEmpty()) url = $"{entry.Parent?.Path}/{entry.Name}";
+        url = url?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
+
+        return new FileModel
+        {
+            Name = entry.Name,
+            Path = entry.Path,
+            ParentPath = entry.Parent?.Path,
+            Title = entry.Title,
+            Size = entry.Size,
+            LastWrite = entry.LastWrite,
+            IsDirectory = entry.IsDirectory,
+            Hash = entry.Hash,
+            Url = url,
+        };
     }
 
     /// <summary>获取文件，增加访问量。可能指向真实文件</summary>

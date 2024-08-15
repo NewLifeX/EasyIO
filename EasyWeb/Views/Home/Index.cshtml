@@ -2,14 +2,7 @@
 @using EasyWeb.Models
 @model DirectoryModel
 @{
-    var ps = new List<FileEntry>();
-    var p = Model.Parent;
-    while (p != null)
-    {
-        ps.Add(p);
-        p = p.Parent;
-    }
-    ps.Add(new FileEntry { Path = "" });
+    var ps = Model.Parents;
 }
 <section id="main">
     <header>
@@ -33,14 +26,11 @@
         </tr>
         @foreach (var item in Model.Entries)
         {
-            var path = item.Path;
-            if (path.IsNullOrEmpty()) path = $"{item.Parent?.Path}/{item.Name}";
-            path = path?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
             <tr>
                 <td>@item.LastWrite.ToFullString("")</td>
                 <td>@item.Size.ToGMK()</td>
                 <td>
-                    <a href="@path" title="@item.Title">@item.Name</a>
+                    <a href="@item.Url" title="@item.Title">@item.Name</a>
                 </td>
                 <td style="max-width:200px;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;">@(item.IsDirectory ? "<dir>" : item.Hash)</td>
             </tr>

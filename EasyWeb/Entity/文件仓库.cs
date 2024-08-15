@@ -102,6 +102,30 @@ public partial class FileStorage
     [BindColumn("RedirectMode", "原始跳转。跳转到原始地址", "")]
     public EasyWeb.Models.RedirectModes RedirectMode { get => _RedirectMode; set { if (OnPropertyChanging("RedirectMode", value)) { _RedirectMode = value; OnPropertyChanged("RedirectMode"); } } }
 
+    private String _VipUrl;
+    /// <summary>VIP地址。CDN域名地址，加速下载</summary>
+    [DisplayName("VIP地址")]
+    [Description("VIP地址。CDN域名地址，加速下载")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("VipUrl", "VIP地址。CDN域名地址，加速下载", "")]
+    public String VipUrl { get => _VipUrl; set { if (OnPropertyChanging("VipUrl", value)) { _VipUrl = value; OnPropertyChanged("VipUrl"); } } }
+
+    private String _VipKey;
+    /// <summary>VIP密钥。CDN的URL验证密钥</summary>
+    [DisplayName("VIP密钥")]
+    [Description("VIP密钥。CDN的URL验证密钥")]
+    [DataObjectField(false, false, true, 50)]
+    [BindColumn("VipKey", "VIP密钥。CDN的URL验证密钥", "")]
+    public String VipKey { get => _VipKey; set { if (OnPropertyChanging("VipKey", value)) { _VipKey = value; OnPropertyChanged("VipKey"); } } }
+
+    private Int32 _VipExpire;
+    /// <summary>VIP有效期。CDN的URL有效期，默认60秒</summary>
+    [DisplayName("VIP有效期")]
+    [Description("VIP有效期。CDN的URL有效期，默认60秒")]
+    [DataObjectField(false, false, false, 0)]
+    [BindColumn("VipExpire", "VIP有效期。CDN的URL有效期，默认60秒", "", ItemType = "TimeSpan")]
+    public Int32 VipExpire { get => _VipExpire; set { if (OnPropertyChanging("VipExpire", value)) { _VipExpire = value; OnPropertyChanged("VipExpire"); } } }
+
     private DateTime _LastScan;
     /// <summary>最后扫描。记录最后一次扫描时间</summary>
     [DisplayName("最后扫描")]
@@ -192,6 +216,9 @@ public partial class FileStorage
             "Period" => _Period,
             "Pattern" => _Pattern,
             "RedirectMode" => _RedirectMode,
+            "VipUrl" => _VipUrl,
+            "VipKey" => _VipKey,
+            "VipExpire" => _VipExpire,
             "LastScan" => _LastScan,
             "CreateUserId" => _CreateUserId,
             "CreateTime" => _CreateTime,
@@ -216,6 +243,9 @@ public partial class FileStorage
                 case "Period": _Period = value.ToInt(); break;
                 case "Pattern": _Pattern = Convert.ToString(value); break;
                 case "RedirectMode": _RedirectMode = (EasyWeb.Models.RedirectModes)value.ToInt(); break;
+                case "VipUrl": _VipUrl = Convert.ToString(value); break;
+                case "VipKey": _VipKey = Convert.ToString(value); break;
+                case "VipExpire": _VipExpire = value.ToInt(); break;
                 case "LastScan": _LastScan = value.ToDateTime(); break;
                 case "CreateUserId": _CreateUserId = value.ToInt(); break;
                 case "CreateTime": _CreateTime = value.ToDateTime(); break;
@@ -269,6 +299,15 @@ public partial class FileStorage
 
         /// <summary>原始跳转。跳转到原始地址</summary>
         public static readonly Field RedirectMode = FindByName("RedirectMode");
+
+        /// <summary>VIP地址。CDN域名地址，加速下载</summary>
+        public static readonly Field VipUrl = FindByName("VipUrl");
+
+        /// <summary>VIP密钥。CDN的URL验证密钥</summary>
+        public static readonly Field VipKey = FindByName("VipKey");
+
+        /// <summary>VIP有效期。CDN的URL有效期，默认60秒</summary>
+        public static readonly Field VipExpire = FindByName("VipExpire");
 
         /// <summary>最后扫描。记录最后一次扫描时间</summary>
         public static readonly Field LastScan = FindByName("LastScan");
@@ -329,6 +368,15 @@ public partial class FileStorage
 
         /// <summary>原始跳转。跳转到原始地址</summary>
         public const String RedirectMode = "RedirectMode";
+
+        /// <summary>VIP地址。CDN域名地址，加速下载</summary>
+        public const String VipUrl = "VipUrl";
+
+        /// <summary>VIP密钥。CDN的URL验证密钥</summary>
+        public const String VipKey = "VipKey";
+
+        /// <summary>VIP有效期。CDN的URL有效期，默认60秒</summary>
+        public const String VipExpire = "VipExpire";
 
         /// <summary>最后扫描。记录最后一次扫描时间</summary>
         public const String LastScan = "LastScan";
