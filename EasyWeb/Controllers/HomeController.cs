@@ -72,19 +72,22 @@ public class HomeController : ControllerBaseX
         //    .ThenByDescending(e => e.LastWrite)
         //    .ThenBy(e => e.Name).ToList();
 
+        var cdnIp = Request.Headers["Ali-Cdn-Real-Ip"] + "";
+        var isCdn = !cdnIp.IsNullOrEmpty();
+
         var model = new DirectoryModel();
 
         var ps = new List<FileModel>();
         var pt = parent;
         while (pt != null)
         {
-            ps.Add(_entryService.BuildModel(pt));
+            ps.Add(_entryService.BuildModel(pt, !isCdn));
             pt = pt.Parent;
         }
         ps.Add(new FileModel { Path = "" });
         model.Parents = ps;
 
-        model.Entries = entris.Select(e => _entryService.BuildModel(e)).ToList();
+        model.Entries = entris.Select(e => _entryService.BuildModel(e, !isCdn)).ToList();
 
         if (parent != null)
             ViewBag.Title = parent.Path;

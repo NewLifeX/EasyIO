@@ -1,5 +1,7 @@
 ﻿using System.Data;
+using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using EasyWeb.Data;
 using EasyWeb.Models;
@@ -7,6 +9,9 @@ using NewLife;
 using NewLife.Caching;
 using NewLife.Http;
 using NewLife.Log;
+using NewLife.Net;
+using NewLife.Security;
+using NewLife.Web;
 
 namespace EasyWeb.Services;
 
@@ -48,7 +53,7 @@ public class EntryService
             k => FileEntry.FindByStorageIdAndPath(storageId, path), CacheTime);
     }
 
-    public FileModel BuildModel(FileEntry entry)
+    public FileModel BuildModel(FileEntry entry, Boolean useVip)
     {
         if (entry == null) return null;
 
@@ -56,6 +61,8 @@ public class EntryService
         var url = entry.Path;
         if (url.IsNullOrEmpty()) url = $"{entry.Parent?.Path}/{entry.Name}";
         url = url?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
+
+        if (useVip && !entry.IsDirectory) url = GetAuthUrl(entry.Storage, url);
 
         return new FileModel
         {
@@ -69,6 +76,36 @@ public class EntryService
             Hash = entry.Hash,
             Url = url,
         };
+    }
+
+    public String GetAuthUrl(FileStorage storage, String url)
+    {
+        if (storage == null || url.IsNullOrEmpty()) return url;
+
+        if (!storage.VipUrl.IsNullOrEmpty())
+        {
+            var uri = new UriInfo(url);
+            var uri2 = new UriInfo(storage.VipUrl)
+            {
+                PathAndQuery = uri.PathAndQuery
+            };
+            url = uri.ToString();
+        }
+
+        if (!storage.VipKey.IsNullOrEmpty())
+        {
+            // http://DomainName/Filename?auth_key={<timestamp>-rand-uid-<md5hash>}
+
+            var time = DateTime.UtcNow.ToInt();
+            var rand = Rand.Next(100_000, 1_000_000);
+            var hash = $"{url}-{time}-{rand}-0-{storage.VipKey}".MD5().ToLower();
+            var key = $"{time}-{rand}-0-{hash}";
+
+            url += url.Contains("?") ? "&" : "?";
+            url += "auth_key=" + key;
+        }
+
+        return url;
     }
 
     /// <summary>获取文件，增加访问量。可能指向真实文件</summary>
