@@ -82,27 +82,53 @@ public class EntryService
     {
         if (storage == null || url.IsNullOrEmpty()) return url;
 
-        if (!storage.VipUrl.IsNullOrEmpty())
-        {
-            var uri = new UriInfo(url);
-            var uri2 = new UriInfo(storage.VipUrl)
-            {
-                PathAndQuery = uri.PathAndQuery
-            };
-            url = uri.ToString();
-        }
-
         if (!storage.VipKey.IsNullOrEmpty())
         {
             // http://DomainName/Filename?auth_key={<timestamp>-rand-uid-<md5hash>}
+            var path = url;
+            var p = path.IndexOf("://");
+            if (p > 0)
+            {
+                var p2 = path.IndexOf('/', p + 3);
+                if (p2 > 0)
+                    path = path[p2..];
+                else
+                    path = "/";
+            }
+            else if (path[0] != '/')
+            {
+                path = "/" + path;
+            }
 
             var time = DateTime.UtcNow.ToInt();
             var rand = Rand.Next(100_000, 1_000_000);
-            var hash = $"{url}-{time}-{rand}-0-{storage.VipKey}".MD5().ToLower();
+            var hash = $"{path}-{time}-{rand}-0-{storage.VipKey}".MD5().ToLower();
             var key = $"{time}-{rand}-0-{hash}";
 
             url += url.Contains("?") ? "&" : "?";
             url += "auth_key=" + key;
+        }
+
+        if (!storage.VipUrl.IsNullOrEmpty())
+        {
+            //var uri = new UriInfo(url);
+            //var uri2 = new UriInfo(storage.VipUrl)
+            //{
+            //    PathAndQuery = uri.PathAndQuery
+            //};
+            //url = uri.ToString();
+
+            var p = url.IndexOf("://");
+            if (p > 0)
+            {
+                var p2 = url.IndexOf('/', p + 3);
+                if (p2 > 0)
+                    url = url[p2..];
+                else
+                    url = "/";
+            }
+
+            url = storage.VipUrl.TrimEnd("/") + url;
         }
 
         return url;
