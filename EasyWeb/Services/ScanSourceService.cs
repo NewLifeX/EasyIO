@@ -1,6 +1,4 @@
-﻿
-using System.Security.Cryptography;
-using EasyWeb.Data;
+﻿using EasyWeb.Data;
 using EasyWeb.Models;
 using NewLife;
 using NewLife.Log;
@@ -36,7 +34,7 @@ public class ScanSourceService : IHostedService
         return Task.CompletedTask;
     }
 
-    void DoScan(Object state)
+    async Task DoScan(Object state)
     {
         using var span = _tracer?.NewSpan("ScanSource");
 
@@ -51,7 +49,7 @@ public class ScanSourceService : IHostedService
             if (item.LastScan.AddSeconds(period) < DateTime.Now)
             {
                 if (item.Kind.EqualIgnoreCase("dotNet"))
-                    ScanDotNet(item).Wait();
+                    await ScanDotNet(item);
 
                 item.LastScan = DateTime.Now;
 

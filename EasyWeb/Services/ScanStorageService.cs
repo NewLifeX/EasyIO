@@ -1,5 +1,4 @@
-﻿
-using EasyWeb.Data;
+﻿using EasyWeb.Data;
 using NewLife;
 using NewLife.Log;
 using NewLife.Remoting.Models;
@@ -106,13 +105,13 @@ public class ScanStorageService : IHostedService
             {
                 var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(fi.Name));
                 if (fe == null)
-                    fe = new FileEntry { Name = fi.Name };
+                    fe = new FileEntry { Name = fi.Name, Enable = true };
                 else
                     childs.Remove(fe);
 
                 fe.StorageId = storage.Id;
                 fe.ParentId = pid;
-                fe.Enable = true;
+                //fe.Enable = true;
                 fe.IsDirectory = false;
                 fe.FullName = fi.FullName.TrimStart(rootPath);
                 fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
@@ -158,13 +157,13 @@ public class ScanStorageService : IHostedService
             {
                 var fe = childs.FirstOrDefault(e => e.Name.EqualIgnoreCase(di.Name));
                 if (fe == null)
-                    fe = new FileEntry { Name = di.Name };
+                    fe = new FileEntry { Name = di.Name, Enable = true };
                 else
                     childs.Remove(fe);
 
                 fe.StorageId = storage.Id;
                 fe.ParentId = pid;
-                fe.Enable = true;
+                //fe.Enable = true;
                 fe.IsDirectory = true;
                 fe.FullName = di.FullName.TrimStart(rootPath);
                 fe.Path = parent != null ? $"{parent.Path}/{fe.Name}" : fe.Name;
