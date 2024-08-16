@@ -74,6 +74,7 @@ public class HomeController : ControllerBaseX
 
         var cdnIp = Request.Headers["Ali-Cdn-Real-Ip"] + "";
         var isCdn = !cdnIp.IsNullOrEmpty();
+        var isHttps = Request.IsHttps;
 
         var model = new DirectoryModel();
 
@@ -81,13 +82,13 @@ public class HomeController : ControllerBaseX
         var pt = parent;
         while (pt != null)
         {
-            ps.Add(_entryService.BuildModel(pt, !isCdn));
+            ps.Add(_entryService.BuildModel(pt, !isCdn, isHttps));
             pt = pt.Parent;
         }
         ps.Add(new FileModel { Path = "" });
         model.Parents = ps;
 
-        model.Entries = entris.Select(e => _entryService.BuildModel(e, !isCdn)).ToList();
+        model.Entries = entris.Select(e => _entryService.BuildModel(e, !isCdn, isHttps)).ToList();
 
         if (parent != null)
             ViewBag.Title = parent.Path;

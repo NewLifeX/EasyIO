@@ -1,7 +1,5 @@
 ﻿using System.Data;
-using System.Net;
 using System.Security.Cryptography;
-using System.Text;
 using System.Web;
 using EasyWeb.Data;
 using EasyWeb.Models;
@@ -9,9 +7,7 @@ using NewLife;
 using NewLife.Caching;
 using NewLife.Http;
 using NewLife.Log;
-using NewLife.Net;
 using NewLife.Security;
-using NewLife.Web;
 
 namespace EasyWeb.Services;
 
@@ -53,7 +49,7 @@ public class EntryService
             k => FileEntry.FindByStorageIdAndPath(storageId, path), CacheTime);
     }
 
-    public FileModel BuildModel(FileEntry entry, Boolean useVip)
+    public FileModel BuildModel(FileEntry entry, Boolean useVip, Boolean isHttps)
     {
         if (entry == null) return null;
 
@@ -63,6 +59,13 @@ public class EntryService
         url = url?.Split('/').Select(e => HttpUtility.UrlEncode(e)).Join("/").EnsureStart("/");
 
         if (useVip && !entry.IsDirectory) url = GetAuthUrl(entry.Storage, url);
+
+        // 如果是Https请求，则生成配套的https地址
+        if (!entry.IsDirectory && isHttps)
+        {
+            if (url.StartsWithIgnoreCase("http://"))
+                url = "https://" + url[7..];
+        }
 
         return new FileModel
         {
