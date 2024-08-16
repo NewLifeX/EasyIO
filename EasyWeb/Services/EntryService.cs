@@ -384,11 +384,21 @@ public class EntryService
     public FileInfo GetFile(FileEntry entry)
     {
         var path = entry.FullName;
-        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(entry.Path);
+        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(path);
 
         path = path.GetFullPath();
 
         return path.AsFile();
+    }
+
+    public DirectoryInfo GetDirectory(FileEntry entry)
+    {
+        var path = entry.FullName;
+        if (entry.Storage != null) path = entry.Storage.HomeDirectory.CombinePath(path);
+
+        path = path.GetFullPath();
+
+        return path.AsDirectory();
     }
 
     /// <summary>清理无效条目（含子目录）的文件，含禁用和原始跳转</summary>
@@ -410,6 +420,10 @@ public class EntryService
 
             entry.Size = childs.Sum(e => e.Size);
             entry.Update();
+
+            // 删除空目录
+            var di = GetDirectory(entry);
+            if (di.Exists && !di.GetFiles().Any()) di.Delete(true);
         }
         else if (force || !entry.Enable || entry.RedirectMode == RedirectModes.Redirect)
         {
