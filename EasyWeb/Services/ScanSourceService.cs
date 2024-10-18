@@ -13,11 +13,13 @@ public class ScanSourceService : IHostedService
     private TimerX _timer;
     private readonly EntryService _entryService;
     private readonly ITracer _tracer;
+    private readonly ILog _log;
 
-    public ScanSourceService(EntryService entryService, ITracer tracer)
+    public ScanSourceService(EntryService entryService, ITracer tracer, ILog log)
     {
         _entryService = entryService;
         _tracer = tracer;
+        _log = log;
     }
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
@@ -66,30 +68,12 @@ public class ScanSourceService : IHostedService
     {
         if (source.Url.IsNullOrEmpty()) return;
 
-        using var span = _tracer?.NewSpan(nameof(ScanDotNet));
+        using var span = _tracer?.NewSpan(nameof(ScanDotNet), source.Name);
 
-        XTrace.WriteLine("扫描：{0}", source.Name);
+        WriteLog("扫描：{0}", source.Name);
 
         // 查找dotNet根目录，不存在则创建
-        var sid = source.StorageId;
-        var root = FileEntry.FindAllByStorageIdAndPath(sid, "dotNet").FirstOrDefault();
-        if (root == null)
-        {
-            root = new FileEntry
-            {
-                //SourceId = source.Id,
-                //StorageId = sid,
-                Name = "dotNet",
-                Path = "dotNet",
-                Enable = true,
-                IsDirectory = true,
-            };
-            //root.Insert();
-        }
-
-        root.StorageId = sid;
-        root.SourceId = source.Id;
-        root.Save();
+        var root = GetOrAddRoot(source);
 
         try
         {
@@ -162,6 +146,31 @@ public class ScanSourceService : IHostedService
         }
     }
 
+    FileEntry GetOrAddRoot(FileSource source)
+    {
+        var sid = source.StorageId;
+        var root = FileEntry.FindAllByStorageIdAndPath(sid, "dotNet").FirstOrDefault();
+        if (root == null)
+        {
+            root = new FileEntry
+            {
+                //SourceId = source.Id,
+                //StorageId = sid,
+                Name = "dotNet",
+                Path = "dotNet",
+                Enable = true,
+                IsDirectory = true,
+            };
+            //root.Insert();
+        }
+
+        root.StorageId = sid;
+        //root.SourceId = source.Id;
+        root.Save();
+
+        return root;
+    }
+
     void Process(FileSource source, FileEntry parent, Object release)
     {
         if (release == null) return;
@@ -170,7 +179,7 @@ public class ScanSourceService : IHostedService
         if (rver == null || rver.Version.IsNullOrEmpty()) return;
         if (rver.Files == null || rver.Files.Count == 0) return;
 
-        XTrace.WriteLine("分析：{0}", rver.Version);
+        WriteLog("分析：{0}", rver.Version);
 
         var list = new List<FileEntry>();
         var childs = FileEntry.FindAllByParentId(parent.Id);
@@ -214,7 +223,7 @@ public class ScanSourceService : IHostedService
 
             if (fe.LastWrite.Year < 2000) fe.LastWrite = parent.LastWrite;
 
-            if ((fe as IEntity).HasDirty)
+            if ((fe as IEntity).HasDirty || fe.LastScan.Date != DateTime.Today)
                 fe.LastScan = DateTime.Now;
 
             //fe.Save();
@@ -295,5 +304,12 @@ public class ScanSourceService : IHostedService
                 }
             }
         }
+    }
+
+    void WriteLog(String format, params Object[] args)
+    {
+        DefaultSpan.Current?.AppendTag(String.Format(format, args));
+
+        _log?.Info(format, args);
     }
 }
