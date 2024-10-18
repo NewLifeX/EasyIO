@@ -329,7 +329,7 @@ public class EntryService
     public void FixVersionAndTag(FileEntry entry)
     {
         var name = entry.Name;
-        if (name.IsNullOrEmpty() || !Version.TryParse(name, out _) && !name.Contains("net") && !name.Contains("runtime") && !name.Contains("-preview")) return;
+        if (name.IsNullOrEmpty() || !Version.TryParse(name, out _) && !name.Contains("net") && !name.Contains("runtime") && !name.Contains("-rc") && !name.Contains("-preview")) return;
 
         name = name.TrimEnd(".tar.gz", ".zip", ".exe", ".pkg");
 
@@ -364,6 +364,10 @@ public class EntryService
                 // 9.0.0-preview.5
                 p = name.LastIndexOf("-preview");
                 if (p > 0) return name.Replace("-preview", null);
+
+                // 9.0.0-rc.2 为区分于预览版，尾部版本号补0
+                p = name.LastIndexOf("-rc");
+                if (p > 0) return name.Replace("-rc", null) + "0";
 
                 return null;
             }
