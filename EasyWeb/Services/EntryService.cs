@@ -283,6 +283,14 @@ public class EntryService
 
     private FileEntry MatchLink(Int32 storageId, Int32 parentId, String[] matchs)
     {
+        return MatchLinks(storageId, parentId, matchs)
+            .OrderByDescending(e => e.Version)
+            .ThenBy(e => e.Name.Length)
+            .FirstOrDefault();
+    }
+
+    private IList<FileEntry> MatchLinks(Int32 storageId, Int32 parentId, String[] matchs)
+    {
         var m = matchs[0];
         var flag = true;
         if (m[0] == '!')
@@ -301,7 +309,7 @@ public class EntryService
             else
                 childs = childs.Where(e => !e.IsDirectory && !m.IsMatch(e.Name)).ToList();
 
-            return childs.OrderByDescending(e => e.LastWrite).FirstOrDefault();
+            return childs;
         }
         else
         {
@@ -312,17 +320,21 @@ public class EntryService
             if (childs.Count == 0) return null;
 
             // 递归查找子目录，找到最新的文件
-            FileEntry fe = null;
+            var links = new List<FileEntry>();
             foreach (var item in childs)
             {
-                var rs = MatchLink(storageId, item.Id, matchs[1..]);
-                if (rs != null && (fe == null || rs.Version > fe.Version))
-                {
-                    fe = rs;
-                }
+                var rs = MatchLinks(storageId, item.Id, matchs[1..]);
+                if (rs != null) links.AddRange(rs);
             }
 
-            return fe;
+            //var fe = links.OrderByDescending(e => e.Version).FirstOrDefault();
+            //return fe;
+            if (links.Count > 0)
+            {
+                var max = links.Max(e => e.Version);
+                links = links.Where(e => e.Version == max).ToList();
+            }
+            return links;
         }
     }
 
