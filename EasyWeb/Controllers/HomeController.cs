@@ -170,6 +170,12 @@ public class HomeController : ControllerBaseX
             return Redirect(url);
         }
 
+        // 根据流量大小做限制
+        if (!_entryService.ValidLimit(entry, UserHost, 600, 100 * 1024 * 1024))
+        {
+            return Problem("流量超限", null, (Int32?)HttpStatusCode.TooManyRequests, "Title", "Type");
+        }
+
         // 如果文件不存在，则临时下载，或者返回404
         if (!System.IO.File.Exists(path))
         {
@@ -184,12 +190,6 @@ public class HomeController : ControllerBaseX
 
                 return NotFound($"下载异常!id={fe.Id}/{fe.Name}");
             }
-        }
-
-        // 根据流量大小做限制
-        if (!_entryService.ValidLimit(entry, UserHost, 600, 100 * 1024 * 1024))
-        {
-            return Problem("流量超限", null, (Int32?)HttpStatusCode.TooManyRequests, "Title", "Type");
         }
 
         // 文件下载使用原始访问的名字和时间
