@@ -29,6 +29,12 @@ public class HomeController : ControllerBaseX
     /// <returns></returns>
     public ActionResult Index() => ShowDir(null);
 
+    public ActionResult Robot()
+    {
+        var txt = "User-agent: *\r\nDisallow: /\r\n";
+        return Content(txt, "text/plain");
+    }
+
     /// <summary>显示目录</summary>
     /// <param name="pathInfo"></param>
     /// <returns></returns>
@@ -110,7 +116,7 @@ public class HomeController : ControllerBaseX
         var (entry, link) = _entryService.RetrieveFile(0, pathInfo);
         if (entry == null || !entry.Enable) return NotFound("未找到文件清单");
 
-        using var span = _tracer?.NewSpan(nameof(DownloadFile), new { entry.Name, entry.Path, entry.FullName });
+        using var span = _tracer?.NewSpan("GetFile", new { pathInfo, entry.Name, entry.Path, entry.FullName }, entry.Size);
 
         // 链接跳转到目标
         if (link != null && entry.LinkRedirect)

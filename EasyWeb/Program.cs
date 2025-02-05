@@ -36,6 +36,12 @@ app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
+    name: "Robot",
+    pattern: "robots.txt",
+    defaults: new { controller = "Home", action = "Robot" }
+);
+
+app.MapControllerRoute(
     name: "ShowDir",
     pattern: "{*pathInfo}",
     defaults: new { controller = "Home", action = "ShowDir" },
