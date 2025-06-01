@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Web;
+using EasyWeb;
 using EasyWeb.Models;
 using EasyWeb.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,14 @@ namespace NewLife.EasyWeb.Controllers;
 public class HomeController : ControllerBaseX
 {
     private readonly EntryService _entryService;
+    private readonly EasyFileSetting _easyFileSetting;
     private readonly ICacheProvider _cacheProvider;
     private readonly ITracer _tracer;
 
-    public HomeController(EntryService entryService, ICacheProvider cacheProvider, ITracer tracer)
+    public HomeController(EntryService entryService, EasyFileSetting easyFileSetting, ICacheProvider cacheProvider, ITracer tracer)
     {
         _entryService = entryService;
+        _easyFileSetting = easyFileSetting;
         _cacheProvider = cacheProvider;
         _tracer = tracer;
         PageSetting.EnableNavbar = false;
@@ -171,7 +174,9 @@ public class HomeController : ControllerBaseX
         }
 
         // 根据流量大小做限制
-        if (!_entryService.ValidLimit(entry, UserHost, 600, 100 * 1024 * 1024))
+        var set = _easyFileSetting;
+        if (set.LimitCycle > 0 && set.FlowLimitByIP > 0 &&
+            !_entryService.ValidLimit(entry, UserHost, set.LimitCycle, set.FlowLimitByIP * 1024 * 1024))
         {
             return Problem("流量超限", null, (Int32?)HttpStatusCode.TooManyRequests, "Title", "Type");
         }
