@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyTitle>文件管理</AssemblyTitle>
     <Description>文件管理系统</Description>
     <Company>新生命开发团队</Company>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NewLife.Cube.Core" Version="6.7.2025.1115" />
+    <PackageReference Include="NewLife.Cube.Core" Version="6.7.2025.1206-beta0951" />
   </ItemGroup>
 
   <ItemGroup>
